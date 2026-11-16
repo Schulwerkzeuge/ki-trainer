@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="de">
 <!--
-  KI-Trainer · Version 1.5.4 (November 2026)
+  KI-Trainer · Version 1.5.5 (November 2026)
   SPDX-License-Identifier: Apache-2.0 · © 2026 St.-Antonius-Gymnasium Lüdinghausen
   Eine KI selbst trainieren: Bilder, Töne, Körperhaltungen, Zeichnungen, Mimik und Messwerte.
   Alles läuft im Browser; Bibliotheken (libs/) und Modelle (models/) kommen vom eigenen Server.
@@ -10,11 +10,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="version" content="1.5.4">
+<meta name="version" content="1.5.5">
 <title>KI-Trainer – KI im Unterricht</title>
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
+<!-- Als Web-App installierbar (Symbol und eigenes Fenster). Es gibt keinen Service Worker: ohne Netz startet die Seite nicht. -->
+<link rel="manifest" href="symbole/app.webmanifest">
+<link rel="apple-touch-icon" href="symbole/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="KI-Trainer">
+<meta name="theme-color" content="#17151A">
 <!-- Keine externen Schriftarten – DSGVO-konform durch System-Font-Stack -->
-<link rel="stylesheet" href="css/ki-trainer.css?v=1.5.4">
+<link rel="stylesheet" href="css/ki-trainer.css?v=1.5.5">
 </head>
 <body>
 
@@ -1443,16 +1448,16 @@ async function classify(canvas, net, knn) {
         integrity="sha384-1p3fY0k54nd9NrUVt6Rvs3KpSxbtCo+IPIVV25jLrbd1J1YpXDZtyW32BkVBMHeC"
         crossorigin="anonymous"></script>
 
-<script src="js/grundlagen.js?v=1.5.4"></script>
-<script src="js/lernmodul.js?v=1.5.4"></script>
-<script src="js/modul-bild.js?v=1.5.4"></script>
-<script src="js/modul-ton.js?v=1.5.4"></script>
-<script src="js/modul-pose.js?v=1.5.4"></script>
-<script src="js/modul-zeichnen.js?v=1.5.4"></script>
-<script src="js/pinguine.js?v=1.5.4"></script>
-<script src="js/modul-mimik.js?v=1.5.4"></script>
-<script src="js/modul-daten.js?v=1.5.4"></script>
-<script src="js/start.js?v=1.5.4"></script>
+<script src="js/grundlagen.js?v=1.5.5"></script>
+<script src="js/lernmodul.js?v=1.5.5"></script>
+<script src="js/modul-bild.js?v=1.5.5"></script>
+<script src="js/modul-ton.js?v=1.5.5"></script>
+<script src="js/modul-pose.js?v=1.5.5"></script>
+<script src="js/modul-zeichnen.js?v=1.5.5"></script>
+<script src="js/pinguine.js?v=1.5.5"></script>
+<script src="js/modul-mimik.js?v=1.5.5"></script>
+<script src="js/modul-daten.js?v=1.5.5"></script>
+<script src="js/start.js?v=1.5.5"></script>
 
 <footer class="site-footer">
   <div>

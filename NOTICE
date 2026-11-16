@@ -34,6 +34,11 @@ Beispieldaten in js/pinguine.js:
   (Horst, Hill & Gorman 2020; Daten: K. Gorman, Palmer Station LTER). Die Originaldaten stehen unter CC0 1.0.
   https://allisonhorst.github.io/palmerpenguins/
 
+Symbole im Ordner symbole/:
+
+  Das Gehirn-Zeichen ist mit der Schrift „Noto Color Emoji“ gezeichnet (Google, SIL Open Font License 1.1).
+  https://github.com/googlefonts/noto-emoji
+
 Der Lizenztext von Papa Parse (unverändert aus dem Paket):
 
   The MIT License (MIT)

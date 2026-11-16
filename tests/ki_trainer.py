@@ -64,6 +64,19 @@ def gespeichert(s):
 def start_und_aufbau(sz, s):
     stand = s.get_attribute('meta[name="version"]', "content")
     pruefe("Start: Fußzeile zeigt die Version", s.text_content("#app-version") == stand and stand != "", s.text_content("#app-version"))
+    # Als Web-App installierbar: Manifest und Symbole müssen da sein und zur Startseite führen
+    manifest = s.evaluate("""async () => {
+      const adresse = document.querySelector('link[rel=manifest]').href, m = await (await fetch(adresse)).json();
+      const bilder = [...m.icons.map(i => new URL(i.src, adresse).href), document.querySelector('link[rel=apple-touch-icon]').href];
+      const masse = await Promise.all(bilder.map(b => new Promise(fertig => {
+        const bild = new Image(); bild.onload = () => fertig(bild.naturalWidth + 'x' + bild.naturalHeight); bild.onerror = () => fertig('fehlt'); bild.src = b; })));
+      return { start: new URL(m.start_url, adresse).href, bereich: new URL(m.scope, adresse).href, anzeige: m.display,
+               soll: [...m.icons.map(i => i.sizes), '180x180'], masse };
+    }""")
+    pruefe("Start: Manifest führt zur Startseite", manifest["start"] == ADRESSE and manifest["bereich"] == ADRESSE
+           and manifest["anzeige"] == "standalone", manifest)
+    pruefe("Start: Symbole vorhanden und in der angegebenen Größe", manifest["masse"] == manifest["soll"], manifest["masse"])
+    pruefe("Start: kein Service Worker", s.evaluate("navigator.serviceWorker.getRegistrations().then(r => r.length)") == 0)
     karten = s.eval_on_selector_all("[data-open]", "e => e.map(x => x.dataset.open)")
     pruefe("Start: sechs Module und die Info-Seite", karten == ["img", "audio", "pose", "draw", "face", "data", "info"], karten)
     pruefe("Start: Titel ohne Schulnamen", "Anton" not in s.title(), s.title())

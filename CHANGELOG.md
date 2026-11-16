@@ -1,5 +1,9 @@
 # Änderungen
 
+## 1.5.5 – November 2026
+
+- **Als Web-App installierbar:** Der KI-Trainer lässt sich auf den Home-Bildschirm oder ins Startmenü legen und öffnet sich dann in einem eigenen Fenster. Dabei wird nichts vorab gespeichert; ohne Netz startet er weiterhin nicht. Neu ist der Ordner `symbole/` – wer den Trainer auf einem eigenen Server betreibt, muss ihn mit hochladen.
+
 ## 1.5.4 – November 2026
 
 - **Behoben:** Die Versionsnummer in der Fußzeile blieb leer.

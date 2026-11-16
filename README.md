@@ -20,7 +20,7 @@ In jedem Modul: Proben aufnehmen, trainieren, live erkennen, das Modell mit eine
 ## Einrichten
 
 1. Dieses Repository herunterladen (grüner Knopf „Code“ → „Download ZIP“) und entpacken.
-2. Den ganzen Inhalt in einen Ordner des Webspace laden, zum Beispiel `ki-trainer/`. Gebraucht werden `index.html`, `favicon.svg` und die Ordner `css/`, `js/`, `libs/`, `models/` (zusammen etwa 17 MB). `tests/`, `werkzeuge/` und `package.json` werden nicht gebraucht.
+2. Den ganzen Inhalt in einen Ordner des Webspace laden, zum Beispiel `ki-trainer/`. Gebraucht werden `index.html`, `favicon.svg` und die Ordner `css/`, `js/`, `libs/`, `models/`, `symbole/` (zusammen etwa 17 MB). `tests/`, `werkzeuge/` und `package.json` werden nicht gebraucht.
 3. Die Seite muss über **https** erreichbar sein – sonst geben Browser Kamera und Mikrofon nicht frei.
 4. Impressum und Datenschutz eintragen: In `index.html` steht in der Fußzeile `<!-- rechtliches --><!-- /rechtliches -->`. Dazwischen gehören die Links Ihrer Schule, zum Beispiel:
 
@@ -33,6 +33,7 @@ Ein Bauschritt ist nicht nötig. Zum Ausprobieren auf dem eigenen Rechner genüg
 ### Hinweise für den Server
 
 - **Content-Security-Policy:** Wer eine strenge CSP setzt, muss für diese Seite `script-src 'self' 'unsafe-eval'` erlauben. TensorFlow.js erzeugt intern Funktionen aus Text und startet sonst nicht. Alles Übrige kommt mit `'self'` aus (dazu `img-src 'self' data: blob:`, `media-src 'self' blob:`, `worker-src 'self' blob:`, `style-src 'self' 'unsafe-inline'`).
+- **Als Web-App:** Die Seite lässt sich installieren (Symbol, eigenes Fenster). Es gibt keinen Service Worker: Es wird nichts vorab gespeichert, und ohne Netz startet die Seite nicht. Eine strenge CSP braucht dafür `manifest-src 'self'`.
 - **Permissions-Policy:** Kamera und Mikrofon müssen für die Seite erlaubt sein (`camera=(self), microphone=(self)`).
 - **Zwischenspeichern:** Die Dateien in `libs/` und `models/` ändern sich nie und dürfen lange im Browser bleiben. Für `index.html`, `css/` und `js/` empfiehlt sich `Cache-Control: no-cache`.
 
@@ -61,6 +62,7 @@ js/lernmodul.js     Basisklasse LernModul: Klassen, Aufnahme, Training, Test, Li
 js/modul-*.js       je ein Modul: Bild, Ton, Pose, Zeichnen, Mimik, Daten
 js/pinguine.js      Beispieldaten
 js/start.js         legt die Module an, verdrahtet Knöpfe und Navigation
+symbole/            Symbole und Manifest, damit sich die Seite als Web-App installieren lässt
 libs/               fremde Bibliotheken, unverändert (siehe NOTICE)
 models/             vortrainierte Modelle, unverändert (siehe NOTICE)
 tests/              automatische Tests
