@@ -1,5 +1,9 @@
 # Änderungen
 
+## 1.5.1 – November 2026
+
+- **Bibliotheken aktualisiert:** TensorFlow.js 4.15.0 → 4.22.0, MobileNet 2.1.0 → 2.1.1, KNN Classifier 1.2.4 → 1.2.6, Face Landmarks Detection 1.0.5 → 1.0.6, Papa Parse 5.4.1 → 5.7.1. Pose Detection 2.1.3 war schon aktuell. Die Modelle in `models/` sind unverändert; früher heruntergeladene Modell-Dateien passen weiter.
+
 ## Werkzeuge – November 2026 (Anwendung unverändert 1.5.0)
 
 - **Bibliotheken aktualisieren:** `werkzeuge/bibliotheken.py` prüft, dass `package.json`, `libs/`, die Prüfsummen in `index.html` und `NOTICE` zusammenpassen, zeigt neuere Versionen an und tauscht Bibliotheken auf Wunsch aus. `package.json` nennt die Versionen, damit GitHub vor bekannten Sicherheitslücken warnen kann. `tests/alle.sh` startet alle Prüfungen.

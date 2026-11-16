@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="de">
 <!--
-  KI-Trainer · Version 1.5.0 (November 2026)
+  KI-Trainer · Version 1.5.1 (November 2026)
   SPDX-License-Identifier: Apache-2.0 · © 2026 St.-Antonius-Gymnasium Lüdinghausen
   Eine KI selbst trainieren: Bilder, Töne, Körperhaltungen, Zeichnungen, Mimik und Messwerte.
   Alles läuft im Browser; Bibliotheken (libs/) und Modelle (models/) kommen vom eigenen Server.
@@ -10,11 +10,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="version" content="1.5.0">
+<meta name="version" content="1.5.1">
 <title>KI-Trainer – KI im Unterricht</title>
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <!-- Keine externen Schriftarten – DSGVO-konform durch System-Font-Stack -->
-<link rel="stylesheet" href="css/ki-trainer.css?v=1.5.0">
+<link rel="stylesheet" href="css/ki-trainer.css?v=1.5.1">
 </head>
 <body>
 
@@ -239,9 +239,9 @@
           <div class="knn-step-txt"><strong>Live erkennen</strong> – Kamerabild → MobileNet → Feature-Vektor → KNN.predictClass().</div>
         </div>
         <div class="code-block"><button type="button" class="btn-copy-code">Kopieren</button>&lt;!-- 1. Bibliotheken --&gt;
-&lt;script src="libs/tensorflow-tfjs-4.15.0-tf.min.js"&gt;&lt;/script&gt;
-&lt;script src="libs/tensorflow-models-mobilenet-2.1.0-mobilenet.min.js"&gt;&lt;/script&gt;
-&lt;script src="libs/tensorflow-models-knn-classifier-1.2.4-knn-classifier.min.js"&gt;&lt;/script&gt;
+&lt;script src="libs/tensorflow-tfjs-4.22.0-tf.min.js"&gt;&lt;/script&gt;
+&lt;script src="libs/tensorflow-models-mobilenet-2.1.1-mobilenet.min.js"&gt;&lt;/script&gt;
+&lt;script src="libs/tensorflow-models-knn-classifier-1.2.6-knn-classifier.min.js"&gt;&lt;/script&gt;
 
 &lt;script&gt;
 async function init() {
@@ -1396,35 +1396,35 @@ async function classify(canvas, net, knn) {
 
   </div>
 </div>
-<script src="libs/tensorflow-tfjs-4.15.0-tf.min.js"
-        integrity="sha384-h/XNDFVVo8fubLoOyBCXZW8B+OPOs7cpygLoTtS6f8DDTPRPCoFNMaE4JXtqrSWj"
+<script src="libs/tensorflow-tfjs-4.22.0-tf.min.js"
+        integrity="sha384-vE8hbVJ4lezako5rlvE7bY0BVzWlFhZncPlckrqNwcUQpVtgbENTgZ8TBbnPjZre"
         crossorigin="anonymous"></script>
-<script src="libs/tensorflow-models-mobilenet-2.1.0-mobilenet.min.js"
-        integrity="sha384-7ZhlpAW9lptV643xV0jWb+SkDEsvvzCa2kT+UhVnD/RFvNyOJZRNHrs9UBDkzyuW"
+<script src="libs/tensorflow-models-mobilenet-2.1.1-mobilenet.min.js"
+        integrity="sha384-oBAqwJ0tv9zzKlbIZyBhhXlEvU/PMrSMqDyOHlEZVC8xWHx4yPySuS7vRikRcYFq"
         crossorigin="anonymous"></script>
-<script src="libs/tensorflow-models-knn-classifier-1.2.4-knn-classifier.min.js"
-        integrity="sha384-baqdctz9rXULfIb5So+0jyuvhMNF32mdeFigrJCQYcoOderiK7dgHlcRGDU+OLle"
+<script src="libs/tensorflow-models-knn-classifier-1.2.6-knn-classifier.min.js"
+        integrity="sha384-QX5hO7OKW55Yg3mgMQWqTFoY7F2+KqUVUtYQj5Stb1s0eFhCVewoJBaaJEXVbzLI"
         crossorigin="anonymous"></script>
 <script src="libs/tensorflow-models-pose-detection-2.1.3-pose-detection.min.js"
         integrity="sha384-pjg3ZYfXdbqsHl42YTyNHeHMzvrwQUvEuQ7tTn6+tDmoUkSD3ItK1sBa73y1l0H3"
         crossorigin="anonymous"></script>
-<script src="libs/tensorflow-models-face-landmarks-detection-1.0.5-face-landmarks-detection.min.js"
-        integrity="sha384-V+H5KxiRlr+q5w/wjbLXFiUbvGfRpRGDUs51Rg4g+NRBD9gUFawN+uHFHP+ecec0"
+<script src="libs/tensorflow-models-face-landmarks-detection-1.0.6-face-landmarks-detection.min.js"
+        integrity="sha384-T+6qrHEuEVzhThvU3uWgAXYT33bqszhgr5EQIy1ROqJ99Xq32wIT9FZVxwQ9O+D+"
         crossorigin="anonymous"></script>
-<script src="libs/papaparse-5.4.1-papaparse.min.js"
-        integrity="sha384-D/t0ZMqQW31H3az8ktEiNb39wyKnS82iFY52QPACM+IjKW3jDUhyIgh2PApRqJZs"
+<script src="libs/papaparse-5.7.1-papaparse.min.js"
+        integrity="sha384-1p3fY0k54nd9NrUVt6Rvs3KpSxbtCo+IPIVV25jLrbd1J1YpXDZtyW32BkVBMHeC"
         crossorigin="anonymous"></script>
 
-<script src="js/grundlagen.js?v=1.5.0"></script>
-<script src="js/lernmodul.js?v=1.5.0"></script>
-<script src="js/modul-bild.js?v=1.5.0"></script>
-<script src="js/modul-ton.js?v=1.5.0"></script>
-<script src="js/modul-pose.js?v=1.5.0"></script>
-<script src="js/modul-zeichnen.js?v=1.5.0"></script>
-<script src="js/pinguine.js?v=1.5.0"></script>
-<script src="js/modul-mimik.js?v=1.5.0"></script>
-<script src="js/modul-daten.js?v=1.5.0"></script>
-<script src="js/start.js?v=1.5.0"></script>
+<script src="js/grundlagen.js?v=1.5.1"></script>
+<script src="js/lernmodul.js?v=1.5.1"></script>
+<script src="js/modul-bild.js?v=1.5.1"></script>
+<script src="js/modul-ton.js?v=1.5.1"></script>
+<script src="js/modul-pose.js?v=1.5.1"></script>
+<script src="js/modul-zeichnen.js?v=1.5.1"></script>
+<script src="js/pinguine.js?v=1.5.1"></script>
+<script src="js/modul-mimik.js?v=1.5.1"></script>
+<script src="js/modul-daten.js?v=1.5.1"></script>
+<script src="js/start.js?v=1.5.1"></script>
 
 <footer class="site-footer">
   <div>
