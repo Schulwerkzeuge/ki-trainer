@@ -1,0 +1,1446 @@
+<!DOCTYPE html>
+<html lang="de">
+<!--
+  KI-Trainer · Version 1.5.0 (November 2026)
+  SPDX-License-Identifier: Apache-2.0 · © 2026 St.-Antonius-Gymnasium Lüdinghausen
+  Eine KI selbst trainieren: Bilder, Töne, Körperhaltungen, Zeichnungen, Mimik und Messwerte.
+  Alles läuft im Browser; Bibliotheken (libs/) und Modelle (models/) kommen vom eigenen Server.
+  Was sich geändert hat, steht in CHANGELOG.md.
+-->
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="version" content="1.5.0">
+<title>KI-Trainer – KI im Unterricht</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<!-- Keine externen Schriftarten – DSGVO-konform durch System-Font-Stack -->
+<link rel="stylesheet" href="css/ki-trainer.css?v=1.5.0">
+</head>
+<body>
+
+<!-- ── THEME TOGGLE (immer sichtbar) ────────────── -->
+<button id="theme-toggle" aria-label="Hell/Dunkel wechseln" title="Hell/Dunkel wechseln">
+  <span class="theme-toggle-icon" id="theme-icon">🌙</span>
+  <div class="theme-toggle-track"></div>
+</button>
+
+<!-- ══════════════════════════════ HOME ══════════════════════════════ -->
+<div id="home" class="screen is-active">
+  <div class="hero">
+    <div class="hero-logo">🧠</div>
+    <h1><em>KI-Trainer</em></h1>
+    <p>Trainiere eine KI direkt im Browser – ohne Anmeldung, ohne Cloud, ohne Datenweitergabe.</p>
+    <div class="hero-badges">
+      <div class="privacy-badge">🔒 100 % lokal &nbsp;·&nbsp; 🟢 100 % freie Software &nbsp;·&nbsp; 🛡️ keine Daten verlassen das Gerät</div>
+    </div>
+  </div>
+
+  <div class="module-grid">
+    <div class="module-card" style="--accent:var(--c-img)"   data-open="img"   role="button" tabindex="0">
+      <div class="module-icon">📷</div>
+      <div class="module-tag">Verfügbar</div><span class="difficulty-badge einsteiger">Einsteiger</span>
+      <h3>Bild­erkennung</h3>
+      <p>Trainiere die KI mit Kamera­aufnahmen. Klassifiziere Objekte, Gesten oder Umgebungen.</p>
+    </div>
+    <div class="module-card" style="--accent:var(--c-audio)" data-open="audio" role="button" tabindex="0">
+      <div class="module-icon">🎵</div>
+      <div class="module-tag">Verfügbar</div><span class="difficulty-badge einsteiger">Einsteiger</span>
+      <h3>Ton­erkennung</h3>
+      <p>Klassifiziere Klang­muster via Mikrofon – Sprache, Instrumente oder Klopf­geräusche.</p>
+    </div>
+    <div class="module-card" style="--accent:var(--c-pose)"  data-open="pose"  role="button" tabindex="0">
+      <div class="module-icon">🕺</div>
+      <div class="module-tag">Verfügbar</div><span class="difficulty-badge einsteiger">Einsteiger</span>
+      <h3>Pose­erkennung</h3>
+      <p>Die KI erkennt Körper­haltungen anhand von Skelett­punkten – unabhängig von Kleidung.</p>
+    </div>
+    <div class="module-card" style="--accent:var(--c-draw)"  data-open="draw"  role="button" tabindex="0">
+      <div class="module-icon">✏️</div>
+      <div class="module-tag">Verfügbar</div><span class="difficulty-badge einsteiger">Einsteiger</span>
+      <h3>Zeichen­erkennung</h3>
+      <p>Zeichne Skizzen auf dem Touchscreen und lass die KI erkennen, was du gezeichnet hast.</p>
+    </div>
+    <div class="module-card" style="--accent:var(--c-face)" data-open="face" role="button" tabindex="0">
+      <div class="module-icon">😊</div>
+      <div class="module-tag">Verfügbar</div><span class="difficulty-badge fortgeschritten">Fortgeschritten</span>
+      <h3>Mimik­erkennung</h3>
+      <p>Spiegel-Avatar, Ausdrucks-Analyse und eigenes Training – mit kritischem Blick auf die Grenzen von Emotions-KI.</p>
+    </div>
+    <div class="module-card" style="--accent:var(--c-data)" data-open="data" role="button" tabindex="0">
+      <div class="module-icon">📊</div>
+      <div class="module-tag">Verfügbar</div><span class="difficulty-badge fortgeschritten">Fortgeschritten</span>
+      <h3>Zahlen­daten</h3>
+      <p>KI ohne Kamera: Klassifiziere strukturierte Messdaten. Mit Palmer-Pinguinen als Einstieg.</p>
+    </div>
+    <div class="module-card" style="--accent:#a78bfa; grid-column: 1 / -1"
+         data-open="info" role="button" tabindex="0">
+      <div style="display:flex; align-items:center; gap:14px">
+        <div class="module-icon" style="font-size:1.6rem">🔬</div>
+        <div>
+          <div class="module-tag" style="background:rgba(167,139,250,.15);color:#a78bfa;margin-bottom:4px">Hintergrundwissen</div>
+          <h3>Wie funktioniert das hier?</h3>
+          <p style="margin-top:4px">Bibliotheken, Lernmethoden, und was es sonst noch gibt – für alle, die mehr wissen wollen.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════ INFO-SCREEN ════════════════════════════ -->
+<div id="mod-info" class="screen">
+  <div class="top-bar">
+    <button type="button" class="btn-back" data-go-home>← Zurück</button>
+    <h2>🔬 Wie funktioniert das hier?</h2>
+  </div>
+  <div class="info-screen-content">
+
+    <!-- Tab-Navigation -->
+    <nav class="info-tabs" role="tablist" aria-label="Themen">
+      <button type="button" class="info-tab is-active" data-info-tab="ki"
+              role="tab" aria-selected="true">🌱 Was ist KI?</button>
+      <button type="button" class="info-tab" data-info-tab="advanced"
+              role="tab" aria-selected="false">🔬 Für Fortgeschrittene</button>
+      <button type="button" class="info-tab" data-info-tab="license"
+              role="tab" aria-selected="false">📦 Bibliotheken & Lizenzen</button>
+    </nav>
+
+    <!-- ── Pane 1: Was ist KI? ── -->
+    <div class="info-pane is-active" id="info-pane-ki" role="tabpanel">
+
+      <div class="ki-intro-card">
+        <h3>🤖 Was ist Künstliche Intelligenz?</h3>
+        <p>
+          Stell dir vor, du bringst einem kleinen Kind bei, Katzen zu erkennen.
+          Du zeigst ihm viele Bilder: „Das ist eine Katze. Das auch. Das hier nicht – das ist ein Hund."
+          Nach vielen Beispielen kann das Kind neue Bilder selbst einordnen – auch Katzen, die es noch nie gesehen hat.
+        </p>
+        <p>
+          Genau so funktioniert Künstliche Intelligenz (KI): Ein Computer bekommt viele Beispiele
+          und <strong>lernt daraus Regeln</strong> – ohne dass jemand diese Regeln aufschreibt.
+          Das nennt man <strong>Maschinelles Lernen</strong>.
+        </p>
+        <p>
+          KI steckt heute überall: in Sprachassistenten, beim Entsperren deines Handys per Gesicht,
+          in Übersetzungsapps, beim Streaming wenn dir neue Filme empfohlen werden
+          oder beim E-Mail-Filter, der Spam aussortiert.
+        </p>
+      </div>
+
+      <div class="ki-intro-card">
+        <h3>📚 Wie lernt eine KI? Die drei Hauptmethoden</h3>
+        <div class="lernmethode-grid">
+          <div class="lernmethode-item is-highlight">
+            <div class="lm-icon">👩‍🏫</div>
+            <h4>Überwachtes Lernen</h4>
+            <p>Die KI bekommt Beispiele <em>mit</em> der richtigen Antwort. Du zeigst ihr: „Das ist Klasse A, das ist Klasse B." Sie lernt, den Unterschied zu erkennen.</p>
+          </div>
+          <div class="lernmethode-item">
+            <div class="lm-icon">🔍</div>
+            <h4>Unüberwachtes Lernen</h4>
+            <p>Die KI bekommt Daten <em>ohne</em> Beschriftung und sucht selbst nach Mustern und Gruppen. „Was gehört zusammen?"</p>
+          </div>
+          <div class="lernmethode-item">
+            <div class="lm-icon">🎮</div>
+            <h4>Bestärkendes Lernen</h4>
+            <p>Die KI probiert verschiedene Aktionen aus und bekommt Punkte für gute Entscheidungen – wie ein Videospiel. So lernt sie Schach oder steuert Roboter.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="ki-intro-card" style="border-color: rgba(34,197,94,.3); background: rgba(34,197,94,.04);">
+        <h3>🧠 Der KI-Trainer nutzt: Überwachtes Lernen</h3>
+        <p>
+          Du bist die Lehrerin oder der Lehrer! Du zeigst der KI Beispiele und gibst ihnen Namen – zum Beispiel
+          „Daumen hoch" und „Daumen runter". Die KI lernt, neue Bilder in diese Kategorien einzuordnen.
+        </p>
+        <p>
+          Konkret passiert Folgendes: Ein vortrainiertes Netz (MobileNet) erkennt zuerst
+          Merkmale in deinem Bild – Formen, Farben, Kanten. Dann merkt sich ein einfacher
+          Algorithmus (KNN, siehe Tab „Für Fortgeschrittene"), welche Merkmale zu welcher
+          Klasse gehören. Das Training dauert nur Sekunden!
+        </p>
+        <p style="margin-top: 10px; padding: 10px; background: rgba(34,197,94,.06); border-radius: 8px; font-size: 0.78rem;">
+          💡 <strong>Wichtig:</strong> Alles passiert direkt in deinem Browser. Kein Bild,
+          kein Ton und kein Skelettbild verlässt dein Gerät. Das ist <strong>DSGVO-konform</strong>
+          und funktioniert sogar ohne Internetverbindung.
+        </p>
+      </div>
+
+      <div class="ki-intro-card">
+        <h3>❓ Häufige Fragen</h3>
+        <div class="knn-step">
+          <div class="knn-num">?</div>
+          <div class="knn-step-txt"><strong>Kann die KI falsch liegen?</strong><br>Ja! Eine KI ist kein Zauberer. Je mehr und vielfältigere Beispiele du gibst, desto besser wird sie. Mit nur 3 Beispielen pro Klasse macht sie viele Fehler.</div>
+        </div>
+        <div class="knn-step">
+          <div class="knn-num">?</div>
+          <div class="knn-step-txt"><strong>Wird das Modell gespeichert?</strong><br>Das trainierte Modell gibt es nur, solange das Fenster offen ist. Du kannst es als Datei herunterladen, wenn du es behalten möchtest. Kamerabilder und Zeichnungen werden nie gespeichert. Klassennamen und Proben aus reinen Zahlenwerten (Ton, Pose, Mimik, Daten) merkt sich dieser Browser, bis du „Modul zurücksetzen“ wählst.</div>
+        </div>
+        <div class="knn-step">
+          <div class="knn-num">?</div>
+          <div class="knn-step-txt"><strong>Was sind die Grenzen?</strong><br>Der Trainer erkennt nur das, was du ihm gezeigt hast. Er kann nicht denken, fühlen oder verstehen – er findet nur Muster in Zahlen.</div>
+        </div>
+      </div>
+
+      <div class="ki-origin-note">
+        <strong>🛠 Wie diese Seite entstanden ist</strong><br>
+        Der KI-Trainer wurde von einer Lehrkraft am St.-Antonius-Gymnasium Lüdinghausen
+        entwickelt – mit <strong>Claude</strong> (Anthropic) als Werkzeug. Die KI hat Code
+        geschrieben, Texte formuliert und Designentscheidungen umgesetzt; alle inhaltlichen
+        Entscheidungen, pädagogischen Überlegungen und das finale Ergebnis liegen beim Menschen.
+        Der Quellcode ist vollständig offen einsehbar. Das Projekt ist selbst ein Beispiel dafür,
+        wie KI als Werkzeug eingesetzt werden kann – nicht als Ersatz für menschliches Urteilsvermögen.
+      </div>
+
+    </div><!-- /ki -->
+
+    <!-- ── Pane 2: Für Fortgeschrittene ── -->
+    <div class="info-pane" id="info-pane-advanced" role="tabpanel">
+
+      <div class="adv-subtabs" role="tablist">
+        <button type="button" class="adv-subtab is-active" data-adv-tab="export">💾 Modelle exportieren</button>
+        <button type="button" class="adv-subtab" data-adv-tab="knn">🧮 KNN erklärt</button>
+      </div>
+
+      <!-- Adv Pane: Modelle exportieren & nutzen -->
+      <div class="adv-pane is-active" id="adv-pane-export">
+
+      <div class="ki-intro-card">
+        <h3>💾 Was passiert beim „Modell herunterladen"?</h3>
+        <p>
+          Wenn du auf „⬇ Modell herunterladen" klickst, speichert der KI-Trainer
+          eine <strong>JSON-Datei</strong> auf deinem Gerät. Diese Datei enthält
+          keine Kamerabilder – nur die <strong>numerischen Merkmalsvektoren</strong>
+          (Feature-Vektoren), die das Netz aus deinen Trainingsbeispielen berechnet hat,
+          sowie die Klassenbezeichnungen.
+        </p>
+        <p>
+          MobileNet selbst (~9 MB) ist <em>nicht</em> in der Datei enthalten –
+          es wird beim Einbinden neu geladen. Das hält die Datei klein (typisch 10–200 KB).
+        </p>
+      </div>
+
+      <div class="ki-intro-card">
+        <h3>🌐 Modell in einer eigenen Webseite nutzen (JavaScript)</h3>
+        <div class="knn-step">
+          <div class="knn-num">1</div>
+          <div class="knn-step-txt"><strong>Bibliotheken einbinden</strong> – TF.js, MobileNet und KNN Classifier als Script-Tags.</div>
+        </div>
+        <div class="knn-step">
+          <div class="knn-num">2</div>
+          <div class="knn-step-txt"><strong>JSON laden</strong> – mit <code>fetch('modell.json')</code>.</div>
+        </div>
+        <div class="knn-step">
+          <div class="knn-num">3</div>
+          <div class="knn-step-txt"><strong>KNN befüllen</strong> – Feature-Vektoren aus der JSON-Datei als Tensoren rekonstruieren.</div>
+        </div>
+        <div class="knn-step">
+          <div class="knn-num">4</div>
+          <div class="knn-step-txt"><strong>Live erkennen</strong> – Kamerabild → MobileNet → Feature-Vektor → KNN.predictClass().</div>
+        </div>
+        <div class="code-block"><button type="button" class="btn-copy-code">Kopieren</button>&lt;!-- 1. Bibliotheken --&gt;
+&lt;script src="libs/tensorflow-tfjs-4.15.0-tf.min.js"&gt;&lt;/script&gt;
+&lt;script src="libs/tensorflow-models-mobilenet-2.1.0-mobilenet.min.js"&gt;&lt;/script&gt;
+&lt;script src="libs/tensorflow-models-knn-classifier-1.2.4-knn-classifier.min.js"&gt;&lt;/script&gt;
+
+&lt;script&gt;
+async function init() {
+  // 2. Modell laden
+  const net = await mobilenet.load({ version: 2, alpha: 0.5 });
+  const knn = knnClassifier.create();
+
+  // 3. Gespeicherten Datensatz rekonstruieren
+  const saved = await fetch('modell.json').then(r => r.json());
+  saved.dataset.forEach(({ classId, data, shape }) => {
+    knn.addExample(tf.tensor(data, shape), classId);
+  });
+
+  // 4. Live erkennen
+  const video = document.getElementById('cam');
+  setInterval(async () => {
+    const feat   = net.infer(video, true);
+    const result = await knn.predictClass(feat, 3);
+    document.getElementById('label').textContent =
+      saved.classes[result.label].name + ' (' +
+      Math.round(result.confidences[result.label] * 100) + '%)';
+  }, 200);
+}
+init();
+&lt;/script&gt;</div>
+      </div>
+
+      <div class="ki-intro-card">
+        <h3>🐍 Modell in Python verwenden</h3>
+        <p>
+          In Python kannst du die gespeicherte JSON-Datei nicht direkt laden –
+          das KNN-Format ist TF.js-spezifisch. Es gibt zwei Wege:
+        </p>
+        <div class="knn-step" style="margin-top:10px">
+          <div class="knn-num">A</div>
+          <div class="knn-step-txt">
+            <strong>Feature-Vektoren direkt nutzen:</strong>
+            Die JSON-Datei enthält Float32-Arrays. Du kannst sie in Python einlesen
+            und mit <code>scikit-learn</code>'s KNeighborsClassifier nachbauen.
+          </div>
+        </div>
+        <div class="code-block"><button type="button" class="btn-copy-code">Kopieren</button>import json, numpy as np
+from sklearn.neighbors import KNeighborsClassifier
+
+# JSON laden
+with open('modell.json') as f:
+    saved = json.load(f)
+
+# Daten aufbereiten
+X, y = [], []
+for entry in saved['dataset']:
+    X.append(entry['data'])
+    y.append(entry['classId'])
+
+X = np.array(X)
+
+# KNN-Klassifikator trainieren
+knn = KNeighborsClassifier(n_neighbors=3)
+knn.fit(X, y)
+
+# Klassen-Lookup
+classes = {str(c['id']): c['name'] for c in saved['classes']}
+
+# Beispielvorhersage (feat_vector = 1024-dimensionaler Vektor von MobileNet)
+# prediction = knn.predict([feat_vector])[0]
+# print(classes[str(prediction)])</div>
+        <div class="knn-step" style="margin-top:12px">
+          <div class="knn-num">B</div>
+          <div class="knn-step-txt">
+            <strong>Neu trainieren mit Python + TensorFlow:</strong>
+            Bilder erneut aufnehmen, MobileNet in Python als Feature-Extraktor
+            nutzen (<code>tensorflow-hub</code>) und KNN oder einen anderen
+            Klassifikator trainieren. Empfehlenswert für größere Projekte.
+          </div>
+        </div>
+        <div class="code-block"><button type="button" class="btn-copy-code">Kopieren</button>import tensorflow as tf
+import tensorflow_hub as hub
+import numpy as np
+from sklearn.neighbors import KNeighborsClassifier
+from PIL import Image
+
+# MobileNet als Feature-Extraktor laden
+model = hub.load("https://tfhub.dev/google/imagenet/mobilenet_v2_050_224/feature_vector/5")
+
+def extract_features(image_path):
+    img = Image.open(image_path).resize((224, 224))
+    arr = np.array(img) / 255.0
+    return model(arr[np.newaxis, ...]).numpy()[0]
+
+# Beispiel: Features für eigene Bilder extrahieren
+# feat = extract_features("mein_bild.jpg")
+# knn.predict([feat])</div>
+      </div>
+
+      <div class="ki-intro-card">
+        <h3>📱 Modell auf dem iPad / Handy nutzen</h3>
+        <p>
+          Da der KI-Trainer eine normale Webseite ist, läuft er auf jedem Gerät
+          mit modernem Browser – iPad, iPhone, Android. Einfach die URL öffnen,
+          fertig. Für Offline-Nutzung kannst du die HTML-Datei zusammen mit der
+          JSON-Modelldatei und den Modell-Ordnern lokal speichern.
+        </p>
+        <div class="help-tip">💡 Für ein richtiges App-Erlebnis kannst du die Seite als
+        PWA (Progressive Web App) verpacken – dann erscheint ein App-Icon auf dem Homescreen
+        und sie funktioniert offline.</div>
+      </div>
+
+      </div><!-- /adv-pane-export -->
+
+
+
+      <!-- Adv Pane: KNN erklärt -->
+      <div class="adv-pane" id="adv-pane-knn">
+
+      <div class="method-card">
+        <h3>🧮 k-Nearest Neighbors – die Idee</h3>
+        <p>
+          KNN ist einer der intuitivsten Algorithmen im maschinellen Lernen:
+          <strong>„Sag mir, wer deine Nachbarn sind – und ich sage dir, wer du bist."</strong>
+        </p>
+        <p>
+          Wenn du eine neue Eingabe klassifizieren willst, sucht KNN die <em>k</em> ähnlichsten
+          bekannten Beispiele aus dem Training und schaut, welche Klasse dort am häufigsten vorkommt.
+          Im KI-Trainer ist k = 3.
+        </p>
+      </div>
+
+      <div class="method-card">
+        <h3>🔢 Wie funktioniert das Schritt für Schritt?</h3>
+        <div class="knn-step">
+          <div class="knn-num">1</div>
+          <div class="knn-step-txt">
+            <strong>Feature-Extraktion:</strong> MobileNet (oder MoveNet) wandelt die Eingabe
+            in einen Zahlen-Vektor um – z. B. 1.024 Zahlen für ein Bild. Dieser Vektor ist
+            der „Fingerabdruck" der Eingabe im mehrdimensionalen Raum.
+          </div>
+        </div>
+        <div class="knn-step">
+          <div class="knn-num">2</div>
+          <div class="knn-step-txt">
+            <strong>Training = Speichern:</strong> Beim Gedrückthalten speichert der KI-Trainer
+            den Fingerabdruck zusammen mit der gewählten Klasse. Kein Gradient Descent,
+            kein Backpropagation – nur Abspeichern.
+          </div>
+        </div>
+        <div class="knn-step">
+          <div class="knn-num">3</div>
+          <div class="knn-step-txt">
+            <strong>Abstand berechnen:</strong> Bei der Erkennung wird der neue Fingerabdruck
+            mit allen gespeicherten verglichen. Der Abstand zwischen zwei Vektoren ist die
+            <strong>euklidische Distanz</strong> – wie der Abstand zweier Punkte im Raum,
+            nur in 1.024 Dimensionen.
+          </div>
+        </div>
+        <div class="knn-step">
+          <div class="knn-num">4</div>
+          <div class="knn-step-txt">
+            <strong>Mehrheitsentscheidung:</strong> Die 3 nächsten Nachbarn (k = 3) werden
+            gefunden. Welche Klasse kommt am häufigsten vor? Das ist das Ergebnis.
+            Die Konfidenz ist der Anteil der Nachbarn dieser Klasse (z. B. 2/3 = 67 %).
+          </div>
+        </div>
+      </div>
+
+      <div class="method-card">
+        <h3>✅ Warum KNN hier ideal ist</h3>
+        <p>
+          <strong>Kein Training im klassischen Sinn:</strong> Neue Beispiele können jederzeit
+          hinzugefügt werden, ohne alles neu zu berechnen. Das macht KNN interaktiv und sofort.
+        </p>
+        <p>
+          <strong>Nachvollziehbar:</strong> Man kann sich bildlich vorstellen, warum eine Klasse
+          erkannt wird – die Nachbarn sind konkrete Trainingsbeispiele, die du selbst eingegeben hast.
+        </p>
+        <p>
+          <strong>Kombinierbar:</strong> KNN alleine wäre bei rohen Pixeln nutzlos (zu viele
+          Dimensionen, zu viel Rauschen). Erst die Features von MobileNet machen den Raum
+          „sinnvoll" – ähnliche Bilder liegen dann wirklich nah beieinander.
+        </p>
+      </div>
+
+      <div class="method-card">
+        <h3>⚠️ Grenzen von KNN</h3>
+        <p>
+          <strong>Langsam bei großen Datenmengen:</strong> Mit 10.000 Trainingsbeispielen
+          muss jede Erkennung 10.000 Abstände berechnen. Im Schulkontext (50–200 Beispiele)
+          ist das kein Problem.
+        </p>
+        <p>
+          <strong>Braucht gute Features:</strong> Wenn die Features nicht aussagekräftig sind
+          (z. B. rohe Pixel ohne MobileNet), funktioniert KNN schlecht.
+        </p>
+        <p>
+          <strong>Kein „Lernen" aus Mustern:</strong> KNN erkennt keine abstrakten Regeln –
+          es vergleicht nur. Ein tiefes neuronales Netz könnte das Konzept „Hund" verstehen,
+          KNN kennt nur die konkreten Beispiele, die du ihm gezeigt hast.
+        </p>
+      </div>
+
+      </div><!-- /adv-pane-knn -->
+
+      <!-- Adv Pane: Weitere Methoden -->
+
+    </div><!-- /advanced -->
+
+    <!-- ── Pane 3: Lizenzen ── -->
+    <div class="info-pane" id="info-pane-license" role="tabpanel">
+
+      <div class="ki-intro-card" style="border-color: rgba(34,197,94,.3); background: rgba(34,197,94,.04);">
+        <h3>🟢 KI-Trainer ist Freie Software</h3>
+        <p>
+          Dieses Projekt ist <strong>Open Source</strong> und steht unter der <strong>Apache-2.0-Lizenz</strong>.
+          Das bedeutet: Du kannst den Quellcode frei lesen, verwenden, verändern und weitergeben –
+          auch für den Unterricht oder eigene Projekte. Die Apache-2.0-Lizenz erlaubt
+          ausdrücklich die kommerzielle Nutzung und das Hosten auf eigenen Servern.
+          Wichtigste Bedingung: Lizenztext und Copyright-Hinweise müssen erhalten bleiben.
+          Auch die verwendeten Bibliotheken, Modelle und Beispieldaten sind frei
+          (Apache 2.0, MIT, CC0) – sie sind unten einzeln aufgeführt.
+        </p>
+        <div class="license-links" style="margin-top:10px">
+          <a class="license-link" href="https://www.apache.org/licenses/LICENSE-2.0" target="_blank" rel="noopener">📄 Apache-2.0-Lizenztext</a>
+        </div>
+      </div>
+
+      <div class="lib-card">
+        <div class="lib-card-hd">
+          <div class="lib-icon" style="background:rgba(255,165,0,.12)">🔶</div>
+          <div>
+            <h3>TensorFlow.js <span class="lib-tag">Fundament</span></h3>
+            <p>Google · <span class="license-badge">Apache 2.0</span> · Version 4.15</p>
+          </div>
+        </div>
+        <div class="lib-card-bd">
+          Führt neuronale Netze direkt im Browser aus – auf CPU oder WebGL-GPU.
+          Grundlage für alle KI-Berechnungen im KI-Trainer.
+          <div class="license-links">
+            <a class="license-link" href="https://github.com/tensorflow/tfjs" target="_blank" rel="noopener">⭐ GitHub</a>
+            <a class="license-link" href="https://www.tensorflow.org/js" target="_blank" rel="noopener">🌐 Website</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="lib-card">
+        <div class="lib-card-hd">
+          <div class="lib-icon" style="background:rgba(79,110,247,.12)">📷</div>
+          <div>
+            <h3>MobileNet v2 <span class="lib-tag">Bildverstehen</span></h3>
+            <p>Google · <span class="license-badge">Apache 2.0</span> · vortrainiert auf 1,2 Mio. Bildern</p>
+          </div>
+        </div>
+        <div class="lib-card-bd">
+          Vortrainiertes Bildverarbeitungsmodell. Wandelt Kamerabilder in numerische
+          Fingerabdrücke um, die der KNN-Algorithmus vergleichen kann.
+          <div class="license-links">
+            <a class="license-link" href="https://github.com/tensorflow/tfjs-models/tree/master/mobilenet" target="_blank" rel="noopener">⭐ GitHub</a>
+            <a class="license-link" href="https://www.kaggle.com/models/google/mobilenet-v2" target="_blank" rel="noopener">📦 Kaggle</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="lib-card">
+        <div class="lib-card-hd">
+          <div class="lib-icon" style="background:rgba(34,197,94,.12)">🕺</div>
+          <div>
+            <h3>MoveNet <span class="lib-tag">Pose-Erkennung</span></h3>
+            <p>Google · <span class="license-badge">Apache 2.0</span> · SinglePose Lightning</p>
+          </div>
+        </div>
+        <div class="lib-card-bd">
+          Erkennt 17 Körperpunkte (Gelenke, Nase, Augen) in Echtzeit.
+          Datenschutzfreundlich: Es werden keine Kamerabilder gespeichert, nur abstrakte Koordinaten.
+          <div class="license-links">
+            <a class="license-link" href="https://github.com/tensorflow/tfjs-models/tree/master/pose-detection" target="_blank" rel="noopener">⭐ GitHub</a>
+            <a class="license-link" href="https://www.kaggle.com/models/google/movenet" target="_blank" rel="noopener">📦 Kaggle</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="lib-card">
+        <div class="lib-card-hd">
+          <div class="lib-icon" style="background:rgba(245,158,11,.12)">🧮</div>
+          <div>
+            <h3>KNN Classifier <span class="lib-tag">Lernalgorithmus</span></h3>
+            <p>TensorFlow.js · <span class="license-badge">Apache 2.0</span> · k-Nearest Neighbors</p>
+          </div>
+        </div>
+        <div class="lib-card-bd">
+          Implementiert den k-Nearest-Neighbors-Algorithmus. Speichert Feature-Vektoren
+          und klassifiziert neue Eingaben durch Abstandsvergleich.
+          <div class="license-links">
+            <a class="license-link" href="https://github.com/tensorflow/tfjs-models/tree/master/knn-classifier" target="_blank" rel="noopener">⭐ GitHub</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="lib-card">
+        <div class="lib-card-hd">
+          <div class="lib-icon" style="background:rgba(167,139,250,.12)">🙂</div>
+          <div>
+            <h3>Face Landmarks Detection <span class="lib-tag">Mimikerkennung</span></h3>
+            <p>Google · TensorFlow.js · <span class="license-badge">Apache 2.0</span></p>
+          </div>
+        </div>
+        <div class="lib-card-bd">
+          Findet ein Gesicht (Modell BlazeFace) und darin 468 Punkte (Modell MediaPipe Face Mesh). Wird im Modul Mimik verwendet. Es entstehen nur Koordinaten, kein Bild wird gespeichert.
+          <div class="license-links">
+            <a class="license-link" href="https://github.com/tensorflow/tfjs-models/tree/master/face-landmarks-detection" target="_blank" rel="noopener">⭐ GitHub</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="lib-card">
+        <div class="lib-card-hd">
+          <div class="lib-icon" style="background:rgba(34,197,94,.12)">📄</div>
+          <div>
+            <h3>Papa Parse <span class="lib-tag">Zahlendaten</span></h3>
+            <p>Matt Holt · <span class="license-badge">MIT</span></p>
+          </div>
+        </div>
+        <div class="lib-card-bd">
+          Liest CSV-Dateien im Modul Zahlendaten.
+          <div class="license-links">
+            <a class="license-link" href="https://github.com/mholt/PapaParse" target="_blank" rel="noopener">⭐ GitHub</a>
+            <a class="license-link" href="https://www.papaparse.com/" target="_blank" rel="noopener">🌐 Website</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="lib-card">
+        <div class="lib-card-hd">
+          <div class="lib-icon" style="background:rgba(56,189,248,.12)">🐧</div>
+          <div>
+            <h3>Palmer-Pinguine <span class="lib-tag">Beispieldaten</span></h3>
+            <p>Horst, Hill &amp; Gorman (2020) · <span class="license-badge">CC0 1.0</span></p>
+          </div>
+        </div>
+        <div class="lib-card-bd">
+          Der Beispieldatensatz im Modul Zahlendaten: 150 synthetisch erzeugte Beispiele nach den Kennwerten der Originaldaten von der Palmer-Station in der Antarktis.
+          <div class="license-links">
+            <a class="license-link" href="https://allisonhorst.github.io/palmerpenguins/" target="_blank" rel="noopener">🌐 Website</a>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /license -->
+
+  </div><!-- /info-screen-content -->
+</div>
+
+<!-- ══════════════════════════ BILD-MODUL ═══════════════════════════ -->
+<div id="mod-img" class="screen">
+  <div class="top-bar">
+    <button type="button" class="btn-back" data-go-home>← Zurück</button>
+    <h2>📷 Bilderkennung</h2>
+    <div class="status-pill"><div class="dot is-loading" id="dot-img"></div><span id="status-img">Lädt…</span></div>
+    <button type="button" class="help-btn" id="help-btn-img" aria-expanded="false" aria-controls="help-panel-img" title="Schritt-für-Schritt-Anleitung">❓ Hilfe</button>
+  </div>
+  <div class="mod-content">
+
+    <div class="mod-intro">📷 <strong>Worum geht’s?</strong> Du bringst der KI bei, Dinge im Kamerabild zu unterscheiden: Bilder je Klasse aufnehmen → trainieren → live erkennen lassen. Schritt-für-Schritt-Anleitung: <strong>❓ Hilfe</strong> oben rechts.</div>
+    <div class="help-panel" id="help-panel-img">
+      <h4>📷 So trainierst du die Bilderkennung</h4>
+      <div class="help-steps">
+        <div class="help-step">
+          <div class="help-step-num">1</div>
+          <div class="help-step-txt"><strong>Kamera starten:</strong> Klicke auf „📷 Kamera starten" und erlaube den Kamerazugriff im Browser.</div>
+        </div>
+        <div class="help-step">
+          <div class="help-step-num">2</div>
+          <div class="help-step-txt"><strong>Klassen anlegen:</strong> Klicke auf „+ Klasse hinzufügen" und gib ihr einen Namen, z. B. „Daumen hoch". Lege mindestens 2 Klassen an.</div>
+        </div>
+        <div class="help-step">
+          <div class="help-step-num">3</div>
+          <div class="help-step-txt"><strong>Bilder aufnehmen:</strong> Halte den grünen Aufnahme-Button bei einer Klasse gedrückt und zeig der Kamera das Objekt / die Geste. Je mehr Bilder (mind. 20), desto besser!</div>
+        </div>
+        <div class="help-step">
+          <div class="help-step-num">4</div>
+          <div class="help-step-txt"><strong>Alle Klassen befüllen:</strong> Wiederhole Schritt 3 für jede Klasse – aus verschiedenen Winkeln und Positionen.</div>
+        </div>
+        <div class="help-step">
+          <div class="help-step-num">5</div>
+          <div class="help-step-txt"><strong>Trainieren:</strong> Klicke auf „⚡ Jetzt trainieren". Das dauert nur wenige Sekunden.</div>
+        </div>
+        <div class="help-step">
+          <div class="help-step-num">6</div>
+          <div class="help-step-txt"><strong>Live-Erkennung:</strong> Klicke auf „▶ Live-Erkennung starten" und halte verschiedene Objekte in die Kamera – die KI erkennt sie in Echtzeit!</div>
+        </div>
+      </div>
+      <div class="help-tip">💡 <strong>Tipp:</strong> Wenn die Erkennung schlecht ist, nimm mehr Bilder auf – besonders aus verschiedenen Winkeln, bei verschiedener Beleuchtung und mit verschiedenem Hintergrund.</div>
+    </div>
+    <div class="mod-cols">
+    <div class="mod-col mod-col-media">
+    <div class="card">
+      <div class="card-hd">📷 Kamera</div>
+      <div class="card-bd">
+        <div class="video-wrap">
+          <video id="img-video" autoplay playsinline muted></video>
+          <canvas id="img-canvas" style="display:none"></canvas>
+          <div class="cam-overlay" id="img-overlay">
+            <div style="font-size:2rem">📷</div>
+            <p>Kamera starten, um Bilder aufzunehmen.</p>
+            <button type="button" class="btn-start-cam" id="img-cam-btn">📷 Kamera starten</button>
+          </div>
+        </div>
+        <div class="cam-btns">
+          <button type="button" id="img-flip-btn">🔄 Wechseln</button>
+          <button type="button" id="img-mirror-btn" title="Spiegelung umschalten">↔️ Spiegeln</button>
+          <button type="button" id="img-capture-all-btn">📸 Alle aufnehmen</button>
+        </div>
+      </div>
+    </div>
+        <div class="card">
+      <div class="card-hd">📊 Live-Erkennung</div>
+      <div class="card-bd">
+        <button type="button" class="btn-live" id="img-live-btn" disabled>▶ Live-Erkennung starten</button>
+        <div class="pred-list" id="img-preds"></div>
+      </div>
+    </div>
+</div><!-- /mod-col-media -->
+    <div class="mod-col mod-col-work">
+    <div class="card">
+      <div class="card-hd">🏷️ Klassen</div>
+      <div class="card-bd">
+        <div class="class-list" id="img-class-list"></div>
+        <button type="button" class="btn-add-class" id="img-add-class-btn">+ Klasse hinzufügen</button>
+      </div>
+    </div>
+    <div class="card full">
+      <div class="card-hd">⚡ Training &amp; Erkennung</div>
+      <div class="card-bd">
+        <div class="training-panel">
+          <div class="info-box" style="background:rgba(79,110,247,.08);border:1px solid rgba(79,110,247,.2);color:#a5b4fc">
+            Mind. <strong>2 Klassen</strong> mit je <strong>10+ Bildern</strong> → trainieren → Live-Erkennung. Alles bleibt im Browser.
+          </div>
+          <div class="progress-bar" id="img-progress"><div class="progress-fill" id="img-progress-fill"></div></div>
+          <button type="button" class="btn-train" id="img-train-btn" disabled>⚡ Jetzt trainieren</button>
+          <div class="train-info" id="img-train-info">Noch kein Training.</div>
+          <div class="dl-row">
+            <button type="button" class="btn-download" id="img-dl-btn" disabled>⬇ Modell herunterladen</button>
+            <button type="button" class="btn-info-toggle" id="img-info-btn" aria-label="Hinweise zur Verwendung" aria-expanded="false">ℹ️</button>
+          </div>
+          <div class="usage-panel" id="img-usage">
+            <div class="usage-tabs">
+              <button type="button" class="usage-tab is-active" data-tab="what">Was wird gespeichert?</button>
+              <button type="button" class="usage-tab" data-tab="how">Einbinden</button>
+              <button type="button" class="usage-tab" data-tab="ideas">Unterrichtsideen</button>
+            </div>
+            <div class="usage-body">
+              <div class="usage-pane is-active" data-pane="what">
+                <h4>Was steckt in der JSON-Datei?</h4>
+                <p>Keine Kamerabilder – nur <span class="t-blue">Feature-Vektoren</span>, die MobileNet aus jedem Bild extrahiert hat.</p>
+                <ul style="margin-top:8px">
+                  <li><span class="t-blue">classes</span> – Klassenbezeichnungen</li>
+                  <li><span class="t-blue">dataset</span> – Feature-Matrix (Float32-Arrays)</li>
+                  <li><span class="t-yellow">Hinweis:</span> MobileNet (~9 MB) wird beim Laden neu geladen.</li>
+                </ul>
+              </div>
+              <div class="usage-pane" data-pane="how">
+                <h4>In eigener Seite einbinden</h4>
+                <ol class="step-list">
+                  <li>TF.js, MobileNet &amp; KNN-Classifier per Script-Tag einbinden</li>
+                  <li>JSON-Datei per <code>fetch()</code> laden</li>
+                  <li>KNN-Datensatz aus gespeicherten Tensoren wiederherstellen</li>
+                  <li>Kamera starten und live klassifizieren</li>
+                </ol>
+                <div class="code-block"><button type="button" class="btn-copy-code">Kopieren</button>const net = await mobilenet.load({version:2, alpha:0.5});
+const knn = knnClassifier.create();
+
+const saved = await fetch('modell.json').then(r => r.json());
+saved.dataset.forEach(({classId, data, shape}) => {
+  knn.addExample(tf.tensor(data, shape), classId);
+});
+
+// Live-Vorhersage:
+const feat   = net.infer(videoEl, true);
+const result = await knn.predictClass(feat, 3);
+console.log(saved.classes[result.label].name);</div>
+              </div>
+              <div class="usage-pane" data-pane="ideas">
+                <h4>Unterrichtsprojekte</h4>
+                <ul class="step-list">
+                  <li>Gestenerkennung → browserbasiertes Spiel</li>
+                  <li>Klasse trainiert gemeinsam, ein Schüler baut die Demo-Seite</li>
+                  <li>5 vs. 50 Bilder vergleichen – Genauigkeitsunterschied messen</li>
+                  <li>Biologie: Pflanzenbestimmung, Kunst: Stilklassifikation</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div><!-- /mod-col-work -->
+    </div><!-- /mod-cols -->
+  </div>
+</div>
+
+<!-- ══════════════════════════ AUDIO-MODUL ══════════════════════════ -->
+<div id="mod-audio" class="screen">
+  <div class="top-bar">
+    <button type="button" class="btn-back" data-go-home>← Zurück</button>
+    <h2>🎵 Tonerkennung</h2>
+    <div class="status-pill"><div class="dot is-loading" id="dot-audio"></div><span id="status-audio">Bereit</span></div>
+    <button type="button" class="help-btn" id="help-btn-audio" aria-expanded="false" aria-controls="help-panel-audio" title="Schritt-für-Schritt-Anleitung">❓ Hilfe</button>
+  </div>
+  <div class="mod-content">
+
+    <div class="mod-intro">🎵 <strong>Worum geht’s?</strong> Die KI lernt, Klangmuster über das Mikrofon zu unterscheiden – z. B. Klatschen vs. Schnipsen: aufnehmen → trainieren → erkennen. Anleitung: <strong>❓ Hilfe</strong> oben rechts.</div>
+    <div class="help-panel" id="help-panel-audio">
+      <h4>🎵 So trainierst du die Tonerkennung</h4>
+      <div class="help-steps">
+        <div class="help-step">
+          <div class="help-step-num">1</div>
+          <div class="help-step-txt"><strong>Mikrofon starten:</strong> Klicke auf „🎙️ Mikrofon starten" und erlaube den Mikrofonzugriff im Browser.</div>
+        </div>
+        <div class="help-step">
+          <div class="help-step-num">2</div>
+          <div class="help-step-txt"><strong>Klassen anlegen:</strong> Klicke auf „+ Klasse hinzufügen" und gib ihr einen Namen, z. B. „Klatschen" oder „Pfeifen".</div>
+        </div>
+        <div class="help-step">
+          <div class="help-step-num">3</div>
+          <div class="help-step-txt"><strong>Töne aufnehmen:</strong> Halte den Aufnahme-Button bei einer Klasse gedrückt und erzeuge den Ton (z. B. klatschen, sprechen, Instrument spielen). Mind. 10–15 Aufnahmen pro Klasse.</div>
+        </div>
+        <div class="help-step">
+          <div class="help-step-num">4</div>
+          <div class="help-step-txt"><strong>Alle Klassen befüllen:</strong> Wiederhole Schritt 3 für jede Klasse. Nimm auch „Stille" als eigene Klasse auf, wenn du Pausen erkennen möchtest.</div>
+        </div>
+        <div class="help-step">
+          <div class="help-step-num">5</div>
+          <div class="help-step-txt"><strong>Trainieren:</strong> Klicke auf „⚡ Jetzt trainieren".</div>
+        </div>
+        <div class="help-step">
+          <div class="help-step-num">6</div>
+          <div class="help-step-txt"><strong>Live-Test:</strong> Klicke auf „▶ Live-Erkennung starten" und erzeuge Töne – die KI reagiert in Echtzeit.</div>
+        </div>
+      </div>
+      <div class="help-tip">💡 <strong>Tipp:</strong> Je kürzer und eindeutiger die Töne, desto besser die Erkennung. Vermeide Hintergrundgeräusche beim Aufnehmen.</div>
+    </div>
+    <div class="mod-cols">
+    <div class="mod-col mod-col-media">
+    <div class="card">
+      <div class="card-hd">🎙️ Mikrofon</div>
+      <div class="card-bd">
+        <div class="audio-viz">
+          <canvas id="audio-viz"></canvas>
+          <div class="rec-indicator" id="audio-rec"></div>
+        </div>
+        <button type="button" class="btn-mic" id="audio-mic-btn">🎙️ Mikrofon starten</button>
+        <p class="hint">Das Mikrofon analysiert Frequenzmuster – wie ein Fingerabdruck des Klangs.</p>
+      </div>
+    </div>
+        <div class="card">
+      <div class="card-hd">📊 Live-Erkennung</div>
+      <div class="card-bd">
+        <button type="button" class="btn-live" id="audio-live-btn" disabled>▶ Live-Erkennung starten</button>
+        <div class="pred-list" id="audio-preds"></div>
+      </div>
+    </div>
+</div><!-- /mod-col-media -->
+    <div class="mod-col mod-col-work">
+    <div class="card">
+      <div class="card-hd">🏷️ Klassen</div>
+      <div class="card-bd">
+        <div class="class-list" id="audio-class-list"></div>
+        <button type="button" class="btn-add-class" id="audio-add-class-btn">+ Klasse hinzufügen</button>
+      </div>
+    </div>
+    <div class="card full">
+      <div class="card-hd">⚡ Training &amp; Erkennung</div>
+      <div class="card-bd">
+        <div class="training-panel">
+          <div class="info-box" style="background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.2);color:#fca5a5">
+            Die KI berechnet ein <strong>Frequenzspektrum</strong> (256 Werte) aus jedem Ton-Schnappschuss und lernt diese Muster zu unterscheiden.
+          </div>
+          <div class="progress-bar" id="audio-progress"><div class="progress-fill" id="audio-progress-fill"></div></div>
+          <button type="button" class="btn-train" id="audio-train-btn" disabled>⚡ Jetzt trainieren</button>
+          <div class="train-info" id="audio-train-info">Noch kein Training.</div>
+          <div class="dl-row">
+            <button type="button" class="btn-download" id="audio-dl-btn" disabled>⬇ Modell herunterladen</button>
+            <button type="button" class="btn-info-toggle" id="audio-info-btn" aria-label="Hinweise zur Verwendung" aria-expanded="false">ℹ️</button>
+          </div>
+          <div class="usage-panel" id="audio-usage">
+            <div class="usage-tabs">
+              <button type="button" class="usage-tab is-active" data-tab="what">Was wird gespeichert?</button>
+              <button type="button" class="usage-tab" data-tab="how">Einbinden</button>
+              <button type="button" class="usage-tab" data-tab="ideas">Unterrichtsideen</button>
+            </div>
+            <div class="usage-body">
+              <div class="usage-pane is-active" data-pane="what">
+                <h4>Was steckt in der JSON-Datei?</h4>
+                <p>Nur <span class="t-blue">Frequenzspektren</span> als Float-Arrays. Kein Audio-Rohmaterial.</p>
+                <ul style="margin-top:8px">
+                  <li><span class="t-green">Vorteil:</span> Kein externes Modell nötig – nur Web Audio API</li>
+                  <li><span class="t-yellow">Hinweis:</span> Mikrofon-Qualität beeinflusst Ergebnisse stark</li>
+                </ul>
+              </div>
+              <div class="usage-pane" data-pane="how">
+                <h4>In eigener Seite einbinden</h4>
+                <ol class="step-list">
+                  <li>TF.js &amp; KNN-Classifier einbinden (kein MobileNet nötig!)</li>
+                  <li>Web Audio API für Mikrofon-Zugriff initialisieren</li>
+                  <li>JSON laden, KNN-Datensatz wiederherstellen</li>
+                  <li>Frequenz-Snapshots live klassifizieren</li>
+                </ol>
+                <div class="code-block"><button type="button" class="btn-copy-code">Kopieren</button>const ctx      = new AudioContext();
+const analyser = ctx.createAnalyser();
+analyser.fftSize = 512;
+ctx.createMediaStreamSource(stream).connect(analyser);
+
+function getFeatures() {
+  const buf = new Float32Array(analyser.frequencyBinCount);
+  analyser.getFloatFrequencyData(buf);
+  return buf.map(v => Math.max(0, Math.min(1, (v+140)/140)));
+}
+
+const feat   = tf.tensor2d([getFeatures()]);
+const result = await knn.predictClass(feat, 3);</div>
+              </div>
+              <div class="usage-pane" data-pane="ideas">
+                <h4>Unterrichtsprojekte</h4>
+                <ul class="step-list">
+                  <li>Vokale A/E/I/O/U – Artikulation verändert das Spektrum sichtbar</li>
+                  <li>Instrumente klassifizieren (Klavier vs. Gitarre vs. Stimme)</li>
+                  <li>Klopfmuster-Steuerung für eine browserbasierte App</li>
+                  <li>Dasselbe Wort in 3 Sprachen – erkennt die KI die Unterschiede?</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div><!-- /mod-col-work -->
+    </div><!-- /mod-cols -->
+  </div>
+</div>
+
+<!-- ══════════════════════════ POSE-MODUL ═══════════════════════════ -->
+<div id="mod-pose" class="screen">
+  <div class="top-bar">
+    <button type="button" class="btn-back" data-go-home>← Zurück</button>
+    <h2>🕺 Poseerkennung</h2>
+    <div class="status-pill"><div class="dot is-loading" id="dot-pose"></div><span id="status-pose">Lädt…</span></div>
+    <button type="button" class="help-btn" id="help-btn-pose" aria-expanded="false" aria-controls="help-panel-pose" title="Schritt-für-Schritt-Anleitung">❓ Hilfe</button>
+  </div>
+  <div class="mod-content">
+
+    <div class="mod-intro">🕺 <strong>Worum geht’s?</strong> Die KI unterscheidet Körperhaltungen anhand von 17 Skelettpunkten – ganz ohne Speichern von Kamerabildern: Posen aufnehmen → trainieren → live erkennen. Anleitung: <strong>❓ Hilfe</strong> oben rechts.</div>
+    <div class="help-panel" id="help-panel-pose">
+      <h4>🕺 So trainierst du die Poseerkennung</h4>
+      <div class="help-steps">
+        <div class="help-step">
+          <div class="help-step-num">1</div>
+          <div class="help-step-txt"><strong>Kamera starten:</strong> Klicke auf „📷 Kamera starten". Du siehst dich selbst – und bunte Punkte auf deinen Gelenken (das Skelett).</div>
+        </div>
+        <div class="help-step">
+          <div class="help-step-num">2</div>
+          <div class="help-step-txt"><strong>Klassen anlegen:</strong> Klicke auf „+ Klasse hinzufügen" und gib ihr einen Namen, z. B. „Arme hoch" oder „Hocke".</div>
+        </div>
+        <div class="help-step">
+          <div class="help-step-num">3</div>
+          <div class="help-step-txt"><strong>Pose einnehmen und aufnehmen:</strong> Nimm die gewünschte Körperhaltung ein, halte den Aufnahme-Button gedrückt und bleib dabei möglichst still. Mind. 15 Aufnahmen pro Pose.</div>
+        </div>
+        <div class="help-step">
+          <div class="help-step-num">4</div>
+          <div class="help-step-txt"><strong>Alle Klassen befüllen:</strong> Wiederhole für jede Pose. Variiere die Position leicht – etwas links, etwas rechts – damit die KI robust wird.</div>
+        </div>
+        <div class="help-step">
+          <div class="help-step-num">5</div>
+          <div class="help-step-txt"><strong>Trainieren:</strong> Klicke auf „⚡ Jetzt trainieren".</div>
+        </div>
+        <div class="help-step">
+          <div class="help-step-num">6</div>
+          <div class="help-step-txt"><strong>Live-Test:</strong> Klicke auf „▶ Live-Erkennung" und bewege dich – die KI zeigt in Echtzeit, welche Pose sie erkennt.</div>
+        </div>
+      </div>
+      <div class="help-tip">💡 <strong>Datenschutz:</strong> Die KI speichert nur 17 Gelenk-Koordinaten, keine Kamerabilder. Dein Aussehen bleibt privat!</div>
+    </div>
+    <div class="mod-cols">
+    <div class="mod-col mod-col-media">
+    <div class="card">
+      <div class="card-hd">📷 Kamera + Skelett</div>
+      <div class="card-bd">
+        <div class="video-wrap">
+          <video id="pose-video" autoplay playsinline muted></video>
+          <canvas id="pose-overlay" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
+          <div class="cam-overlay" id="pose-overlay-ui">
+            <div style="font-size:2rem">🕺</div>
+            <p>Kamera starten für Pose-Erkennung.</p>
+            <button type="button" class="btn-start-cam" id="pose-cam-btn">📷 Kamera starten</button>
+          </div>
+        </div>
+        <div class="cam-btns"><button type="button" id="pose-flip-btn">🔄 Kamera wechseln</button></div>
+        <div class="pose-status" id="pose-status-txt">Warte auf Kamera…</div>
+      </div>
+    </div>
+        <div class="card">
+      <div class="card-hd">📊 Live-Erkennung</div>
+      <div class="card-bd">
+        <button type="button" class="btn-live" id="pose-live-btn" disabled>▶ Live-Erkennung starten</button>
+        <div class="pred-list" id="pose-preds"></div>
+      </div>
+    </div>
+</div><!-- /mod-col-media -->
+    <div class="mod-col mod-col-work">
+    <div class="card">
+      <div class="card-hd">🏷️ Posen-Klassen</div>
+      <div class="card-bd">
+        <div class="class-list" id="pose-class-list"></div>
+        <button type="button" class="btn-add-class" id="pose-add-class-btn">+ Klasse hinzufügen</button>
+      </div>
+    </div>
+    <div class="card full">
+      <div class="card-hd">⚡ Training &amp; Erkennung</div>
+      <div class="card-bd">
+        <div class="training-panel">
+          <div class="info-box" style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);color:#86efac">
+            Die KI sieht <strong>keine Pixel</strong>, nur 17 Körperpunkte. Hintergrund und Kleidung sind irrelevant!
+          </div>
+          <div class="progress-bar" id="pose-progress"><div class="progress-fill" id="pose-progress-fill"></div></div>
+          <button type="button" class="btn-train" id="pose-train-btn" disabled>⚡ Jetzt trainieren</button>
+          <div class="train-info" id="pose-train-info">Noch kein Training.</div>
+          <div class="dl-row">
+            <button type="button" class="btn-download" id="pose-dl-btn" disabled>⬇ Modell herunterladen</button>
+            <button type="button" class="btn-info-toggle" id="pose-info-btn" aria-label="Hinweise zur Verwendung" aria-expanded="false">ℹ️</button>
+          </div>
+          <div class="usage-panel" id="pose-usage">
+            <div class="usage-tabs">
+              <button type="button" class="usage-tab is-active" data-tab="what">Was wird gespeichert?</button>
+              <button type="button" class="usage-tab" data-tab="how">Einbinden</button>
+              <button type="button" class="usage-tab" data-tab="ideas">Unterrichtsideen</button>
+            </div>
+            <div class="usage-body">
+              <div class="usage-pane is-active" data-pane="what">
+                <h4>Was steckt in der JSON-Datei?</h4>
+                <p>Nur <span class="t-blue">normalisierte Koordinaten</span> der 17 Körperpunkte. <span class="t-green">Kein einziges Pixel</span> wird gespeichert.</p>
+              </div>
+              <div class="usage-pane" data-pane="how">
+                <h4>In eigener Seite einbinden</h4>
+                <ol class="step-list">
+                  <li>TF.js, Pose-Detection &amp; KNN-Classifier einbinden</li>
+                  <li>MoveNet-Detektor initialisieren</li>
+                  <li>JSON laden, Datensatz wiederherstellen</li>
+                  <li>Frame: Pose schätzen → normalisieren → klassifizieren</li>
+                </ol>
+                <div class="code-block"><button type="button" class="btn-copy-code">Kopieren</button>const detector = await poseDetection.createDetector(
+  poseDetection.SupportedModels.MoveNet);
+
+const poses = await detector.estimatePoses(video);
+const kps   = poses[0].keypoints;
+const cx    = (kps[5].x + kps[6].x) / 2;
+const cy    = (kps[5].y + kps[6].y) / 2;
+const scale = Math.hypot(kps[6].x-kps[5].x, kps[6].y-kps[5].y);
+const vec   = kps.flatMap(k =>
+  [(k.x-cx)/scale, (k.y-cy)/scale, k.score ?? 0]);
+
+const result = await knn.predictClass(tf.tensor2d([vec]), 3);</div>
+              </div>
+              <div class="usage-pane" data-pane="ideas">
+                <h4>Unterrichtsprojekte</h4>
+                <ul class="step-list">
+                  <li>Sport-Feedback: Kniebeuge korrekt vs. falsch</li>
+                  <li>Gebärdensprache: 5 Zeichen lernen und erkennen lassen</li>
+                  <li>Historische Posen nachstellen (Statuen, Gemälde)</li>
+                  <li>Tanzschritte → Musik-Player reagiert auf Posen</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div><!-- /mod-col-work -->
+    </div><!-- /mod-cols -->
+  </div>
+</div>
+
+<!-- ══════════════════════════ ZEICHEN-MODUL ════════════════════════ -->
+<div id="mod-draw" class="screen">
+  <div class="top-bar">
+    <button type="button" class="btn-back" data-go-home>← Zurück</button>
+    <h2>✏️ Zeichenerkennung</h2>
+    <div class="status-pill"><div class="dot is-loading" id="dot-draw"></div><span id="status-draw">Lädt…</span></div>
+    <button type="button" class="help-btn" id="help-btn-draw" aria-expanded="false" aria-controls="help-panel-draw" title="Schritt-für-Schritt-Anleitung">❓ Hilfe</button>
+  </div>
+  <div class="mod-content">
+
+    <div class="mod-intro">✏️ <strong>Worum geht’s?</strong> Zeichne Skizzen und bringe der KI bei, sie zu erkennen: zeichnen → zur Klasse hinzufügen → trainieren → raten lassen. Anleitung: <strong>❓ Hilfe</strong> oben rechts.</div>
+    <div class="help-panel" id="help-panel-draw">
+      <h4>✏️ So trainierst du die Zeichenerkennung</h4>
+      <div class="help-steps">
+        <div class="help-step">
+          <div class="help-step-num">1</div>
+          <div class="help-step-txt"><strong>Klassen anlegen:</strong> Klicke auf „+ Klasse hinzufügen" und gib ihr einen Namen, z. B. „Kreis" oder „Haus".</div>
+        </div>
+        <div class="help-step">
+          <div class="help-step-num">2</div>
+          <div class="help-step-txt"><strong>Zeichnen:</strong> Male auf der weißen Fläche das erste Beispiel. Nutze Maus, Finger oder Stift.</div>
+        </div>
+        <div class="help-step">
+          <div class="help-step-num">3</div>
+          <div class="help-step-txt"><strong>Aufnehmen:</strong> Klicke den Aufnahme-Button bei der passenden Klasse. Dann auf „🗑 Löschen" und das nächste Beispiel zeichnen. Wiederhole das mind. 15× pro Klasse.</div>
+        </div>
+        <div class="help-step">
+          <div class="help-step-num">4</div>
+          <div class="help-step-txt"><strong>Variiere deine Zeichnungen:</strong> Zeichne die Form unterschiedlich groß, an verschiedenen Positionen, mit verschiedener Strichstärke.</div>
+        </div>
+        <div class="help-step">
+          <div class="help-step-num">5</div>
+          <div class="help-step-txt"><strong>Trainieren:</strong> Klicke auf „⚡ Jetzt trainieren".</div>
+        </div>
+        <div class="help-step">
+          <div class="help-step-num">6</div>
+          <div class="help-step-txt"><strong>Live-Test:</strong> Zeichne etwas in den Bereich und klicke auf „🔍 Erkennen" – die KI sagt dir, was sie sieht.</div>
+        </div>
+      </div>
+      <div class="help-tip">💡 <strong>Tipp:</strong> Starte mit einfachen, klar unterschiedlichen Formen (z. B. Dreieck, Kreis, Quadrat). Zu ähnliche Formen verwirren die KI.</div>
+    </div>
+    <div class="mod-cols">
+    <div class="mod-col mod-col-media">
+    <div class="card">
+      <div class="card-hd">✏️ Zeichenbereich</div>
+      <div class="card-bd">
+        <div class="draw-wrap"><canvas id="draw-canvas"></canvas></div>
+        <div class="draw-controls">
+          <button type="button" id="draw-clear-btn">🗑 Löschen</button>
+          <button type="button" id="draw-undo-btn">↩ Rückgängig</button>
+        </div>
+        <div class="stroke-btns">
+          <button type="button" class="btn-stroke is-active" data-stroke="6">Dünn</button>
+          <button type="button" class="btn-stroke" data-stroke="12">Mittel</button>
+          <button type="button" class="btn-stroke" data-stroke="22">Dick</button>
+        </div>
+        <p class="hint">Zeichne, füge der Klasse hinzu, wiederhole mit anderer Variation.</p>
+      </div>
+    </div>
+        <div class="card">
+      <div class="card-hd">🔮 Erkennung</div>
+      <div class="card-bd">
+        <button type="button" class="btn-live" id="draw-live-btn" disabled>🔮 Zeichnung erkennen</button>
+        <div class="pred-list" id="draw-preds"></div>
+      </div>
+    </div>
+</div><!-- /mod-col-media -->
+    <div class="mod-col mod-col-work">
+    <div class="card">
+      <div class="card-hd">🏷️ Klassen</div>
+      <div class="card-bd">
+        <div class="class-list" id="draw-class-list"></div>
+        <button type="button" class="btn-add-class" id="draw-add-class-btn">+ Klasse hinzufügen</button>
+      </div>
+    </div>
+    <div class="card full">
+      <div class="card-hd">⚡ Training &amp; Erkennung</div>
+      <div class="card-bd">
+        <div class="training-panel">
+          <div class="info-box" style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);color:#fde68a">
+            Zeichne dasselbe Zeichen in vielen Variationen: Größen, Positionen, Strichstärken. Je vielfältiger, desto robuster!
+          </div>
+          <div class="progress-bar" id="draw-progress"><div class="progress-fill" id="draw-progress-fill"></div></div>
+          <button type="button" class="btn-train" id="draw-train-btn" disabled>⚡ Jetzt trainieren</button>
+          <div class="train-info" id="draw-train-info">Noch kein Training.</div>
+          <div class="dl-row">
+            <button type="button" class="btn-download" id="draw-dl-btn" disabled>⬇ Modell herunterladen</button>
+            <button type="button" class="btn-info-toggle" id="draw-info-btn" aria-label="Hinweise zur Verwendung" aria-expanded="false">ℹ️</button>
+          </div>
+          <div class="usage-panel" id="draw-usage">
+            <div class="usage-tabs">
+              <button type="button" class="usage-tab is-active" data-tab="what">Was wird gespeichert?</button>
+              <button type="button" class="usage-tab" data-tab="how">Einbinden</button>
+              <button type="button" class="usage-tab" data-tab="ideas">Unterrichtsideen</button>
+            </div>
+            <div class="usage-body">
+              <div class="usage-pane is-active" data-pane="what">
+                <h4>Was steckt in der JSON-Datei?</h4>
+                <p>MobileNet-<span class="t-blue">Feature-Vektoren</span> der Zeichnungen. Die Zeichnungen selbst werden <span class="t-yellow">nicht</span> gespeichert.</p>
+                <ul style="margin-top:8px">
+                  <li><span class="t-green">Tipp:</span> Canvas auf 224×224 px normieren vor Klassifikation</li>
+                </ul>
+              </div>
+              <div class="usage-pane" data-pane="how">
+                <h4>In eigener Seite einbinden</h4>
+                <div class="code-block"><button type="button" class="btn-copy-code">Kopieren</button>// Canvas → Features → Klassifikation
+async function classify(canvas, net, knn) {
+  const feat   = tf.tidy(() => net.infer(
+    tf.browser.fromPixels(canvas), true));
+  const result = await knn.predictClass(feat, 3);
+  feat.dispose();
+  return result;
+}</div>
+              </div>
+              <div class="usage-pane" data-pane="ideas">
+                <h4>Unterrichtsprojekte</h4>
+                <ul class="step-list">
+                  <li>Quick-Draw-Spiel: 20 s zeichnen, KI rät</li>
+                  <li>Mathe: +, −, ×, ÷ zeichnen → Rechner erkennt Operatoren</li>
+                  <li>Fremdsprachen: chinesische Zeichen oder arabische Buchstaben</li>
+                  <li>Kunst: Stilrichtungen trainieren → KI gibt Stilfeedback</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div><!-- /mod-col-work -->
+    </div><!-- /mod-cols -->
+  </div>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<!-- External libraries -->
+<!-- TF.js-Bibliotheken: Subresource Integrity (SRI) verhindert Code-Injection bei CDN-Kompromittierung -->
+<!-- ══════════════════════════ MIMIK-MODUL ═══════════════════════════ -->
+<div id="mod-face" class="screen">
+  <div class="top-bar" style="background:#9f1239;border-color:#9f1239">
+    <button type="button" class="btn-back" data-go-home>← Zurück</button>
+    <h2>😊 Mimikerkennung</h2>
+    <div class="status-pill"><div class="dot is-loading" id="dot-face"></div><span id="status-face">Lädt…</span></div>
+    <button type="button" class="help-btn" id="help-btn-face" aria-expanded="false" aria-controls="help-panel-face">❓ Hilfe</button>
+  </div>
+  <div class="mod-content">
+
+    <div class="mod-intro">😊 <strong>Worum geht’s?</strong> Drei Modi: <strong>Spiegel</strong> – ein Katzen-Avatar ahmt deine Mimik live nach · <strong>Erkunden</strong> – zeigt die berechneten Ausdruckswerte als Balken · <strong>Trainieren</strong> – eigene Mimik-KI erstellen. Anleitung: <strong>❓ Hilfe</strong> oben rechts.</div>
+
+    <div class="help-panel" id="help-panel-face">
+      <h4>😊 Mimikerkennung – drei Modi</h4>
+      <div class="help-steps">
+        <div class="help-step"><div class="help-step-num">1</div><div class="help-step-txt"><strong>Kamera starten</strong> – das Modell läuft lokal, keine Daten verlassen das Gerät.</div></div>
+        <div class="help-step"><div class="help-step-num">2</div><div class="help-step-txt"><strong>Spiegel-Tab:</strong> Ein Katzen-Avatar spiegelt deine Gesichtsbewegungen live – powered by 468 Keypoints.</div></div>
+        <div class="help-step"><div class="help-step-num">3</div><div class="help-step-txt"><strong>Erkunden-Tab:</strong> Geometrisch berechnete Ausdruckswerte – teste ob sie mit deiner echten Emotion übereinstimmen.</div></div>
+        <div class="help-step"><div class="help-step-num">4</div><div class="help-step-txt"><strong>Trainieren-Tab:</strong> Trainiere eine eigene KI auf deine Mimik mit dem KNN-Prinzip aus den anderen Modulen.</div></div>
+        <div class="help-step"><div class="help-step-num">5</div><div class="help-step-txt"><strong>Experiment:</strong> Teste dein trainiertes Modell bei Mitschüler*innen – funktioniert es? Warum (nicht)?</div></div>
+        <div class="help-step"><div class="help-step-num">6</div><div class="help-step-txt"><strong>Diskussion:</strong> Lies den Wissenschafts-Hinweis im Erkunden-Tab und diskutiere den Einsatz von Emotions-KI.</div></div>
+      </div>
+      <div class="help-tip">💡 Starte im Spiegel-Tab – der Aha-Moment kommt wenn du lächelst und die Katze mitlacht.</div>
+    </div>
+
+    <div class="face-warning">
+      <strong>⚠️ Wichtig:</strong> Dieses Modul erkennt <em>Gesichtsbewegungen</em>, keine echten Emotionen.
+      Alle Berechnungen laufen lokal im Browser – es werden keine Daten übertragen und keine Kamerabilder gespeichert. Der Browser merkt sich nur Zahlenwerte (Abstände im Gesicht), bis du „Modul zurücksetzen“ wählst.
+      Die Grenzen dieser Technik sind Teil des Lernziels.
+    </div>
+
+    <div class="mod-cols">
+    <div class="mod-col mod-col-media">
+    <!-- Shared camera + avatar -->
+    <div class="card">
+      <div class="card-hd">📷 Kamera &amp; Avatar</div>
+      <div class="card-bd" style="padding:10px">
+        <div class="face-cam-area">
+          <div class="video-wrap">
+            <video id="face-video" autoplay playsinline muted></video>
+            <canvas id="face-kp-canvas" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
+            <div class="cam-overlay" id="face-cam-overlay">
+              <div style="font-size:2rem">😊</div>
+              <p>Kamera starten</p>
+              <button type="button" class="btn-start-cam" id="face-cam-btn">📷 Kamera starten</button>
+            </div>
+          </div>
+          <canvas id="face-avatar-canvas" class="face-avatar-canvas"></canvas>
+        </div>
+        <div class="cam-btns" style="margin-top:8px">
+          <button type="button" id="face-flip-btn">🔄 Kamera wechseln</button>
+          <button type="button" id="face-mirror-btn">↔️ Spiegeln</button>
+        </div>
+      </div>
+    </div>
+    </div><!-- /mod-col-media -->
+    <div class="mod-col mod-col-work">
+    <div class="card" style="overflow:hidden">
+      <div class="face-tabs" role="tablist">
+        <button type="button" class="face-tab is-active" data-face-tab="spiegel" role="tab">🐱 Spiegel</button>
+        <button type="button" class="face-tab" data-face-tab="erkunden" role="tab">🔍 Erkunden</button>
+        <button type="button" class="face-tab" data-face-tab="trainieren" role="tab">🏋 Trainieren</button>
+      </div>
+      <p class="face-tab-hint" id="face-tab-hint">Der Katzen-Avatar rechts neben dem Kamerabild ahmt deine Gesichtsbewegungen live nach.</p>
+    </div>
+
+    <!-- Spiegel Pane -->
+    <div class="face-pane is-active" id="face-pane-spiegel">
+      <div class="card">
+        <div class="card-hd">🐱 Wie der Avatar funktioniert</div>
+        <div class="card-bd">
+          <p style="font-size:0.82rem;color:var(--muted);line-height:1.6">
+            Der Avatar liest <strong>468 Gesichts-Keypoints</strong> aus und berechnet daraus
+            Mund­öffnung, Lächeln, Augenbrauen­position und Augen­öffnung.
+            Dieselben Keypoints nutzt du im Trainieren-Tab als Eingabe für die KI.
+          </p>
+        </div>
+      </div>
+      <div class="face-experiment-box">
+        <strong>🔬 Beobachte:</strong> Halte eine Augenbraue hoch – reagiert die Katze?
+        Forme ein Lächeln ohne Zähne – erkennt der Avatar den Unterschied zu einem offenen Lächeln?
+        Was passiert, wenn du den Kopf zur Seite neigst?
+      </div>
+    </div>
+
+    <!-- Erkunden Pane -->
+    <div class="face-pane" id="face-pane-erkunden">
+      <div class="card">
+        <div class="card-hd">🔍 Berechnete Ausdruckswerte</div>
+        <div class="card-bd" style="display:flex;flex-direction:column;gap:8px">
+          <p style="font-size:0.78rem;color:var(--muted);margin-bottom:4px">
+            Aus den Keypoints werden geometrische Kennzahlen berechnet – keine Black Box, sondern Abstände und Verhältnisse.
+          </p>
+          <div id="face-expr-bars"></div>
+        </div>
+      </div>
+      <div class="face-science-note">
+        <strong>🧪 Das Ekman-Problem</strong><br>
+        Diese Werte basieren auf Paul Ekmans Theorie „universeller Basisemotionen" (1970er).
+        Neuere Forschung (Lisa Feldman Barrett u.a.) zeigt: Gesichtsausdrücke sind kulturell geprägt
+        und kontextabhängig. Ein Lächeln kann Freude, Nervosität oder Höflichkeit bedeuten.
+        <strong>Teste selbst:</strong> Kann die Analyse unterscheiden, ob dein Lächeln echt oder erzwungen ist?
+      </div>
+      <div class="face-experiment-box">
+        <strong>💡 Klassenexperiment:</strong> Erzeugt dieselbe „Emotion" bei verschiedenen Personen
+        dieselben Werte? Was bedeutet das für den Einsatz von Emotions-KI in Schule, Bewerbungsgesprächen oder der Justiz?
+      </div>
+    </div>
+
+    <!-- Trainieren Pane -->
+    <div class="face-pane" id="face-pane-trainieren">
+      <div class="card">
+        <div class="card-hd">🏷️ Klassen</div>
+        <div class="card-bd">
+          <div class="class-list" id="face-classes"></div>
+          <button type="button" class="btn-add-class" id="face-add-class-btn">+ Klasse hinzufügen</button>
+        </div>
+      </div>
+      <div class="training-panel">
+        <div class="info-box" id="face-train-info">Noch kein Training.</div>
+        <div class="progress-bar" id="face-progress"><div class="progress-fill" id="face-progress-fill"></div></div>
+        <button type="button" class="btn-train" id="face-train-btn" disabled>⚡ KI trainieren</button>
+      </div>
+      <div class="card">
+        <div class="card-hd">📊 Live-Erkennung</div>
+        <div class="card-bd" style="display:flex;flex-direction:column;gap:10px">
+          <button type="button" class="btn-live" id="face-live-btn" disabled>▶ Live-Erkennung starten</button>
+          <div class="pred-list" id="face-preds"></div>
+        </div>
+      </div>
+      <div class="face-experiment-box">
+        <strong>🔬 Experiment:</strong> Trainiere die KI auf deiner Mimik.
+        Lasse eine Mitschüler*in denselben Ausdruck zeigen.
+        Erkennt deine KI ihn? Wenn nicht – was fehlt ihr?
+      </div>
+      <div class="card">
+        <div class="card-bd">
+          <div class="dl-row">
+            <button type="button" class="btn-download" id="face-dl-btn" disabled>⬇ Modell herunterladen</button>
+            <label class="btn-download" style="cursor:pointer;text-align:center">⬆ Modell laden<input type="file" id="face-upload-model" accept=".json" style="display:none"></label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    </div><!-- /mod-col-work -->
+    </div><!-- /mod-cols -->
+  </div>
+</div>
+
+<!-- ══════════════════════════ DATEN-MODUL ════════════════════════════ -->
+<div id="mod-data" class="screen">
+  <div class="top-bar" style="background:#0e7490;border-color:#0e7490">
+    <button type="button" class="btn-back" data-go-home>← Zurück</button>
+    <h2>📊 Zahlendaten</h2>
+    <div class="status-pill"><div class="dot is-on" id="dot-data"></div><span id="status-data">Bereit</span></div>
+    <button type="button" class="help-btn" id="help-btn-data" aria-expanded="false" aria-controls="help-panel-data">❓ Hilfe</button>
+  </div>
+  <div class="mod-content">
+
+    <div class="mod-intro">📊 <strong>Worum geht’s?</strong> KI ohne Kamera: Sie lernt aus reinen Zahlen (z. B. Schnabellänge), Kategorien zu unterscheiden – Datensatz laden → trainieren → neue Messwerte vorhersagen. Anleitung: <strong>❓ Hilfe</strong> oben rechts.</div>
+
+    <div class="help-panel" id="help-panel-data">
+      <h4>📊 So nutzt du das Zahlendaten-Modul</h4>
+      <div class="help-steps">
+        <div class="help-step"><div class="help-step-num">1</div><div class="help-step-txt"><strong>Schnellstart:</strong> Klicke auf „🐧 Pinguine laden" – 150 Beispiele werden direkt als Trainingsdaten übernommen.</div></div>
+        <div class="help-step"><div class="help-step-num">2</div><div class="help-step-txt"><strong>Merkmale:</strong> Die Eigenschaften (z.B. Schnabellänge) werden automatisch aus dem Datensatz gelesen. Für eigene Daten kannst du sie manuell definieren.</div></div>
+        <div class="help-step"><div class="help-step-num">3</div><div class="help-step-txt"><strong>CSV-Upload:</strong> Eigene Tabelle hochladen – beliebige Spalten, eine davon als Klassen-Label wählen.</div></div>
+        <div class="help-step"><div class="help-step-num">4</div><div class="help-step-txt"><strong>Manuell:</strong> Messwerte direkt eintippen – gut für selbst erhobene Daten (Blätter messen, Schrittzählen etc.).</div></div>
+        <div class="help-step"><div class="help-step-num">5</div><div class="help-step-txt"><strong>Trainieren</strong> und dann unter „Vorhersage" neue Messwerte eingeben und klassifizieren lassen.</div></div>
+        <div class="help-step"><div class="help-step-num">6</div><div class="help-step-txt"><strong>Vergleiche:</strong> Wie ändert sich die Genauigkeit wenn du einzelne Merkmale weglässt?</div></div>
+      </div>
+      <div class="help-tip">💡 Der Unterschied zu den anderen Modulen: Hier gibt es kein Kamerabild – die KI lernt aus reinen Zahlen.</div>
+    </div>
+
+    <!-- Dataset -->
+    <div class="card">
+      <div class="card-hd">📂 Datensatz</div>
+      <div class="card-bd" style="display:flex;flex-direction:column;gap:10px">
+        <button type="button" class="btn-train" id="data-load-btn" style="background:linear-gradient(135deg,#0891b2,#06b6d4)">🐧 Palmer-Pinguine laden</button>
+        <div class="data-dataset-note" id="data-dataset-note" style="display:none"></div>
+        <label class="btn-download" style="cursor:pointer;text-align:center;display:block">
+          📁 CSV-Datei hochladen
+          <input type="file" id="data-csv-input" accept=".csv" style="display:none">
+        </label>
+        <div id="data-csv-config" style="display:none;flex-direction:column;gap:8px">
+          <p style="font-size:0.78rem;color:var(--muted)">Welche Spalte enthält die Klassen-Bezeichnung?</p>
+          <select id="data-label-col" style="width:100%;background:var(--surf2);border:1px solid var(--border);border-radius:8px;padding:8px;color:var(--text);font-family:var(--font-ui);font-size:0.82rem"></select>
+          <button type="button" class="btn-live" id="data-csv-confirm-btn">✓ Datensatz übernehmen</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Features -->
+    <div class="card">
+      <div class="card-hd">🔢 Merkmale (Features)</div>
+      <div class="card-bd">
+        <div id="data-features-list"></div>
+        <button type="button" class="btn-add-class" id="data-add-feature-btn">+ Merkmal hinzufügen</button>
+      </div>
+    </div>
+
+    <!-- Classes -->
+    <div class="card">
+      <div class="card-hd">🏷️ Klassen &amp; Trainingsbeispiele</div>
+      <div class="card-bd">
+        <div class="class-list" id="data-classes"></div>
+        <button type="button" class="btn-add-class" id="data-add-class-btn">+ Klasse hinzufügen</button>
+      </div>
+    </div>
+
+    <!-- Training -->
+    <div class="training-panel">
+      <div class="info-box" id="data-train-info">Noch kein Training.</div>
+      <div class="progress-bar" id="data-progress"><div class="progress-fill" id="data-progress-fill"></div></div>
+      <button type="button" class="btn-train" id="data-train-btn" disabled>⚡ KI trainieren</button>
+    </div>
+
+    <!-- Prediction -->
+    <div class="card">
+      <div class="card-hd">🔮 Vorhersage – neue Messung eingeben</div>
+      <div class="card-bd" style="display:flex;flex-direction:column;gap:12px">
+        <div class="data-input-grid" id="data-predict-inputs"></div>
+        <button type="button" class="btn-live" id="data-predict-btn" disabled>🔮 Klassifizieren</button>
+        <div class="pred-list" id="data-preds"></div>
+      </div>
+    </div>
+
+    <!-- Download -->
+    <div class="card">
+      <div class="card-bd">
+        <div class="dl-row">
+          <button type="button" class="btn-download" id="data-dl-btn" disabled>⬇ Modell herunterladen</button>
+          <label class="btn-download" style="cursor:pointer;text-align:center">⬆ Modell laden<input type="file" id="data-upload-model" accept=".json" style="display:none"></label>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+<script src="libs/tensorflow-tfjs-4.15.0-tf.min.js"
+        integrity="sha384-h/XNDFVVo8fubLoOyBCXZW8B+OPOs7cpygLoTtS6f8DDTPRPCoFNMaE4JXtqrSWj"
+        crossorigin="anonymous"></script>
+<script src="libs/tensorflow-models-mobilenet-2.1.0-mobilenet.min.js"
+        integrity="sha384-7ZhlpAW9lptV643xV0jWb+SkDEsvvzCa2kT+UhVnD/RFvNyOJZRNHrs9UBDkzyuW"
+        crossorigin="anonymous"></script>
+<script src="libs/tensorflow-models-knn-classifier-1.2.4-knn-classifier.min.js"
+        integrity="sha384-baqdctz9rXULfIb5So+0jyuvhMNF32mdeFigrJCQYcoOderiK7dgHlcRGDU+OLle"
+        crossorigin="anonymous"></script>
+<script src="libs/tensorflow-models-pose-detection-2.1.3-pose-detection.min.js"
+        integrity="sha384-pjg3ZYfXdbqsHl42YTyNHeHMzvrwQUvEuQ7tTn6+tDmoUkSD3ItK1sBa73y1l0H3"
+        crossorigin="anonymous"></script>
+<script src="libs/tensorflow-models-face-landmarks-detection-1.0.5-face-landmarks-detection.min.js"
+        integrity="sha384-V+H5KxiRlr+q5w/wjbLXFiUbvGfRpRGDUs51Rg4g+NRBD9gUFawN+uHFHP+ecec0"
+        crossorigin="anonymous"></script>
+<script src="libs/papaparse-5.4.1-papaparse.min.js"
+        integrity="sha384-D/t0ZMqQW31H3az8ktEiNb39wyKnS82iFY52QPACM+IjKW3jDUhyIgh2PApRqJZs"
+        crossorigin="anonymous"></script>
+
+<script src="js/grundlagen.js?v=1.5.0"></script>
+<script src="js/lernmodul.js?v=1.5.0"></script>
+<script src="js/modul-bild.js?v=1.5.0"></script>
+<script src="js/modul-ton.js?v=1.5.0"></script>
+<script src="js/modul-pose.js?v=1.5.0"></script>
+<script src="js/modul-zeichnen.js?v=1.5.0"></script>
+<script src="js/pinguine.js?v=1.5.0"></script>
+<script src="js/modul-mimik.js?v=1.5.0"></script>
+<script src="js/modul-daten.js?v=1.5.0"></script>
+<script src="js/start.js?v=1.5.0"></script>
+
+<footer class="site-footer">
+  <div>
+    KI-Trainer <span id="app-version"></span> &nbsp;·&nbsp; Freie Software unter der
+    <a href="https://www.apache.org/licenses/LICENSE-2.0" target="_blank" rel="noopener">Apache-2.0-Lizenz</a>
+    &nbsp;·&nbsp; <a class="quellcode" href="https://github.com/Schulwerkzeuge/ki-trainer" target="_blank" rel="noopener">Quellcode auf GitHub</a>
+    <!-- rechtliches --><!-- /rechtliches -->
+  </div>
+  <div class="footer-zeile">
+    Alle Berechnungen laufen lokal im Browser – es werden keine Kamera-, Ton- oder Trainingsdaten übertragen.
+    Die verwendeten Bibliotheken und Modelle sind ebenfalls freie Software (Apache 2.0, MIT) – siehe „Wie funktioniert das hier?“ auf der Startseite.
+  </div>
+  <div class="footer-zeile footer-leise">
+    © 2026 St.-Antonius-Gymnasium Lüdinghausen &nbsp;·&nbsp; Entwickelt für den Informatikunterricht
+  </div>
+  <div class="footer-zeile footer-leise">Erstellt mit KI-Unterstützung</div>
+</footer>
+</body>
+</html>
