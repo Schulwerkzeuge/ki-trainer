@@ -1,5 +1,9 @@
 # Änderungen
 
+## 1.5.3 – November 2026
+
+- „Wie diese Seite entstanden ist“ nennt kein Produkt mehr, sondern „ein KI-Sprachmodell“.
+
 ## 1.5.2 – November 2026
 
 Seite „Wie funktioniert das hier?“ durchgesehen.
