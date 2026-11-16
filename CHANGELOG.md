@@ -1,5 +1,13 @@
 # Änderungen
 
+## 1.5.2 – November 2026
+
+Seite „Wie funktioniert das hier?“ durchgesehen.
+
+- **Beispiele berichtigt:** Das JavaScript-Beispiel „Modell in einer eigenen Webseite nutzen“ brach bei mehr als einer Probe je Klasse ab und lud MobileNet von fremden Servern; es ist jetzt eine vollständige, lauffähige Seite mit dem Modell vom eigenen Server (ebenso das Kurzbeispiel im Modul Bilderkennung). Das Python-Beispiel las die Proben falsch ein. Das JavaScript-Beispiel wird jetzt bei jedem Testlauf ausgeführt.
+- **Angaben berichtigt:** Ein Bild ergibt 1.280 Zahlen (nicht 1.024); k ist einstellbar (voreingestellt 3); Größe der Modell-Datei; der Trainer braucht zum Laden eine Verbindung zum Server und https (die Hinweise zu Offline-Betrieb und „als PWA verpacken“ stimmten nicht); „DSGVO-konform“ durch die überprüfbare Aussage ersetzt, dass nichts an einen Server geschickt wird.
+- Die Versionsnummer von TensorFlow.js steht nicht mehr in der Lizenzübersicht (sie veraltete beim Aktualisieren); Versionen stehen in NOTICE. Anführungszeichen vereinheitlicht.
+
 ## 1.5.1 – November 2026
 
 - **Bibliotheken aktualisiert:** TensorFlow.js 4.15.0 → 4.22.0, MobileNet 2.1.0 → 2.1.1, KNN Classifier 1.2.4 → 1.2.6, Face Landmarks Detection 1.0.5 → 1.0.6, Papa Parse 5.4.1 → 5.7.1. Pose Detection 2.1.3 war schon aktuell. Die Modelle in `models/` sind unverändert; früher heruntergeladene Modell-Dateien passen weiter.

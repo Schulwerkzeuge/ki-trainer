@@ -7,6 +7,7 @@ from PIL import Image
 from pruefen import ADRESSE, Sitzung, ende, pruefe
 
 TMP = pathlib.Path(tempfile.mkdtemp())
+gemerkt = {}                                     # Ergebnisse, die ein späterer Abschnitt braucht
 
 
 def oeffne(s, modul):
@@ -141,6 +142,7 @@ def modul_bild(sz, s):
     pruefe("Bild: Live-Erkennung liefert Werte", warte_auf(s, "[...document.querySelectorAll('#img-preds .pred-pct')].some(e => parseInt(e.textContent) > 0)"))
     s.click("#img-live-btn")
     name, modell = lade_herunter(s, "img")
+    gemerkt["bild"] = modell
     pruefe("Bild: Modell-Datei enthält nur Zahlen, keine Bilder", modell["type"] == "img" and modell["meta"]["featureSize"] > 100
            and "data:image" not in json.dumps(modell), name)
     # Klassenname mit HTML: muss als Text erscheinen
@@ -157,6 +159,26 @@ def modul_bild(sz, s):
     s.reload(); s.wait_for_timeout(800); oeffne(s, "img")
     warte_auf(s, "!document.getElementById('img-cam-btn').disabled", 30); s.wait_for_timeout(1500)
     pruefe("Bild: nach dem Neuladen sind keine Bilder mehr da", sum(proben(s, "img")) == 0 and s.locator("#mod-img img.cls-thumb").count() == 0, proben(s, "img"))
+
+
+def beispiel_einbinden(sz, s):
+    """Das Beispiel „Modell in einer eigenen Webseite nutzen“ von der Seite „Wie funktioniert das hier?“ muss wirklich laufen:
+    Der Text des Beispiels wird als eigene Seite ausgeliefert, zusammen mit dem eben heruntergeladenen Modell."""
+    beispiel = s.evaluate("document.querySelector('#adv-pane-export .code-block').textContent").removeprefix("Kopieren")
+    pruefe("Beispiel: lädt nichts von fremden Servern", "http" not in beispiel)
+    seite = sz.kontext.new_page()
+    seite.on("pageerror", lambda e: sz.meldungen.append("Beispiel-Fehler: " + str(e)[:300]))
+    seite.on("console", lambda m: m.type == "error" and sz.meldungen.append("Beispiel-Konsole: " + m.text[:300]))
+    seite.on("request", lambda r: sz.anfragen.append(r.url))
+    seite.route("**/beispiel.html", lambda r: r.fulfill(content_type="text/html; charset=utf-8",
+                                                          body="<!DOCTYPE html><meta charset='utf-8'>" + beispiel))
+    seite.route("**/modell.json", lambda r: r.fulfill(content_type="application/json", body=json.dumps(gemerkt["bild"])))
+    seite.goto(ADRESSE + "beispiel.html")
+    namen = [k["name"] for k in gemerkt["bild"]["classes"]]
+    ok = warte_auf(seite, r"/ \(\d+ %\)$/.test(document.getElementById('label').textContent)", 40)
+    text = seite.text_content("#label")
+    pruefe("Beispiel: eigene Seite erkennt mit dem heruntergeladenen Modell", ok and any(text.startswith(n) for n in namen), text)
+    seite.close()
 
 
 def modul_zeichnen(sz, s):
@@ -294,7 +316,7 @@ def modul_mimik(sz, s):
 
 with Sitzung() as sz:
     s = sz.seite()
-    for teil in (start_und_aufbau, modul_daten, modul_bild, modul_zeichnen, modul_ton, modul_pose, modul_mimik):
+    for teil in (start_und_aufbau, modul_daten, modul_bild, beispiel_einbinden, modul_zeichnen, modul_ton, modul_pose, modul_mimik):
         try:
             teil(sz, s)
         except Exception as e:                      # ein hängender Abschnitt soll die übrigen nicht verdecken

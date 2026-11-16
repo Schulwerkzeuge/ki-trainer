@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="de">
 <!--
-  KI-Trainer · Version 1.5.1 (November 2026)
+  KI-Trainer · Version 1.5.2 (November 2026)
   SPDX-License-Identifier: Apache-2.0 · © 2026 St.-Antonius-Gymnasium Lüdinghausen
   Eine KI selbst trainieren: Bilder, Töne, Körperhaltungen, Zeichnungen, Mimik und Messwerte.
   Alles läuft im Browser; Bibliotheken (libs/) und Modelle (models/) kommen vom eigenen Server.
@@ -10,11 +10,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="version" content="1.5.1">
+<meta name="version" content="1.5.2">
 <title>KI-Trainer – KI im Unterricht</title>
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <!-- Keine externen Schriftarten – DSGVO-konform durch System-Font-Stack -->
-<link rel="stylesheet" href="css/ki-trainer.css?v=1.5.1">
+<link rel="stylesheet" href="css/ki-trainer.css?v=1.5.2">
 </head>
 <body>
 
@@ -111,7 +111,7 @@
         <h3>🤖 Was ist Künstliche Intelligenz?</h3>
         <p>
           Stell dir vor, du bringst einem kleinen Kind bei, Katzen zu erkennen.
-          Du zeigst ihm viele Bilder: „Das ist eine Katze. Das auch. Das hier nicht – das ist ein Hund."
+          Du zeigst ihm viele Bilder: „Das ist eine Katze. Das auch. Das hier nicht – das ist ein Hund.“
           Nach vielen Beispielen kann das Kind neue Bilder selbst einordnen – auch Katzen, die es noch nie gesehen hat.
         </p>
         <p>
@@ -132,12 +132,12 @@
           <div class="lernmethode-item is-highlight">
             <div class="lm-icon">👩‍🏫</div>
             <h4>Überwachtes Lernen</h4>
-            <p>Die KI bekommt Beispiele <em>mit</em> der richtigen Antwort. Du zeigst ihr: „Das ist Klasse A, das ist Klasse B." Sie lernt, den Unterschied zu erkennen.</p>
+            <p>Die KI bekommt Beispiele <em>mit</em> der richtigen Antwort. Du zeigst ihr: „Das ist Klasse A, das ist Klasse B.“ Sie lernt, den Unterschied zu erkennen.</p>
           </div>
           <div class="lernmethode-item">
             <div class="lm-icon">🔍</div>
             <h4>Unüberwachtes Lernen</h4>
-            <p>Die KI bekommt Daten <em>ohne</em> Beschriftung und sucht selbst nach Mustern und Gruppen. „Was gehört zusammen?"</p>
+            <p>Die KI bekommt Daten <em>ohne</em> Beschriftung und sucht selbst nach Mustern und Gruppen. „Was gehört zusammen?“</p>
           </div>
           <div class="lernmethode-item">
             <div class="lm-icon">🎮</div>
@@ -151,18 +151,17 @@
         <h3>🧠 Der KI-Trainer nutzt: Überwachtes Lernen</h3>
         <p>
           Du bist die Lehrerin oder der Lehrer! Du zeigst der KI Beispiele und gibst ihnen Namen – zum Beispiel
-          „Daumen hoch" und „Daumen runter". Die KI lernt, neue Bilder in diese Kategorien einzuordnen.
+          „Daumen hoch“ und „Daumen runter“. Die KI lernt, neue Bilder in diese Kategorien einzuordnen.
         </p>
         <p>
           Konkret passiert Folgendes: Ein vortrainiertes Netz (MobileNet) erkennt zuerst
           Merkmale in deinem Bild – Formen, Farben, Kanten. Dann merkt sich ein einfacher
-          Algorithmus (KNN, siehe Tab „Für Fortgeschrittene"), welche Merkmale zu welcher
+          Algorithmus (KNN, siehe Tab „Für Fortgeschrittene“), welche Merkmale zu welcher
           Klasse gehören. Das Training dauert nur Sekunden!
         </p>
         <p style="margin-top: 10px; padding: 10px; background: rgba(34,197,94,.06); border-radius: 8px; font-size: 0.78rem;">
           💡 <strong>Wichtig:</strong> Alles passiert direkt in deinem Browser. Kein Bild,
-          kein Ton und kein Skelettbild verlässt dein Gerät. Das ist <strong>DSGVO-konform</strong>
-          und funktioniert sogar ohne Internetverbindung.
+          kein Ton und keine Körperpunkte verlassen dein Gerät – es wird nichts an einen Server geschickt.
         </p>
       </div>
 
@@ -206,17 +205,19 @@
       <div class="adv-pane is-active" id="adv-pane-export">
 
       <div class="ki-intro-card">
-        <h3>💾 Was passiert beim „Modell herunterladen"?</h3>
+        <h3>💾 Was passiert beim „Modell herunterladen“?</h3>
         <p>
-          Wenn du auf „⬇ Modell herunterladen" klickst, speichert der KI-Trainer
+          Wenn du auf „⬇ Modell herunterladen“ klickst, speichert der KI-Trainer
           eine <strong>JSON-Datei</strong> auf deinem Gerät. Diese Datei enthält
           keine Kamerabilder – nur die <strong>numerischen Merkmalsvektoren</strong>
-          (Feature-Vektoren), die das Netz aus deinen Trainingsbeispielen berechnet hat,
+          (Feature-Vektoren), die aus deinen Trainingsbeispielen berechnet wurden,
           sowie die Klassenbezeichnungen.
         </p>
         <p>
-          MobileNet selbst (~9 MB) ist <em>nicht</em> in der Datei enthalten –
-          es wird beim Einbinden neu geladen. Das hält die Datei klein (typisch 10–200 KB).
+          MobileNet selbst (~8 MB) ist <em>nicht</em> in der Datei enthalten –
+          es wird beim Einbinden neu geladen. Bei Bildern und Zeichnungen braucht jede Probe
+          etwa 25 KB (1.280 Zahlen), 40 Proben ergeben also rund 1 MB. Bei Ton, Pose, Mimik
+          und Zahlendaten ist die Datei viel kleiner.
         </p>
       </div>
 
@@ -224,97 +225,121 @@
         <h3>🌐 Modell in einer eigenen Webseite nutzen (JavaScript)</h3>
         <div class="knn-step">
           <div class="knn-num">1</div>
-          <div class="knn-step-txt"><strong>Bibliotheken einbinden</strong> – TF.js, MobileNet und KNN Classifier als Script-Tags.</div>
+          <div class="knn-step-txt"><strong>Bibliotheken und Modell bereitlegen</strong> – die Ordner <code>libs/</code> und <code>models/mobilenet/</code> aus dem KI-Trainer neben die eigene Seite kopieren.</div>
         </div>
         <div class="knn-step">
           <div class="knn-num">2</div>
-          <div class="knn-step-txt"><strong>JSON laden</strong> – mit <code>fetch('modell.json')</code>.</div>
+          <div class="knn-step-txt"><strong>JSON laden</strong> – die heruntergeladene Datei als <code>modell.json</code> daneben legen und mit <code>fetch('modell.json')</code> einlesen.</div>
         </div>
         <div class="knn-step">
           <div class="knn-num">3</div>
-          <div class="knn-step-txt"><strong>KNN befüllen</strong> – Feature-Vektoren aus der JSON-Datei als Tensoren rekonstruieren.</div>
+          <div class="knn-step-txt"><strong>KNN befüllen</strong> – je Klasse steht in der Datei eine Tabelle mit einer Zeile pro Probe.</div>
         </div>
         <div class="knn-step">
           <div class="knn-num">4</div>
           <div class="knn-step-txt"><strong>Live erkennen</strong> – Kamerabild → MobileNet → Feature-Vektor → KNN.predictClass().</div>
         </div>
-        <div class="code-block"><button type="button" class="btn-copy-code">Kopieren</button>&lt;!-- 1. Bibliotheken --&gt;
+        <p style="margin-top:10px">
+          Das Beispiel gilt für Modelle aus der Bild- und der Zeichenerkennung. Die Seite muss über
+          <strong>https</strong> (oder <code>localhost</code>) laufen, sonst gibt der Browser die Kamera nicht frei.
+        </p>
+        <div class="code-block"><button type="button" class="btn-copy-code">Kopieren</button>&lt;video id="cam" autoplay playsinline muted width="320"&gt;&lt;/video&gt;
+&lt;p id="label"&gt;Lade …&lt;/p&gt;
+
+&lt;!-- 1. Bibliotheken --&gt;
 &lt;script src="libs/tensorflow-tfjs-4.22.0-tf.min.js"&gt;&lt;/script&gt;
 &lt;script src="libs/tensorflow-models-mobilenet-2.1.1-mobilenet.min.js"&gt;&lt;/script&gt;
 &lt;script src="libs/tensorflow-models-knn-classifier-1.2.6-knn-classifier.min.js"&gt;&lt;/script&gt;
 
 &lt;script&gt;
-async function init() {
-  // 2. Modell laden
-  const net = await mobilenet.load({ version: 2, alpha: 0.5 });
+async function start() {
+  // 2. MobileNet vom eigenen Server laden, leeren KNN anlegen
+  const net = await mobilenet.load({ version: 2, alpha: 0.5, modelUrl: 'models/mobilenet/model.json' });
   const knn = knnClassifier.create();
 
-  // 3. Gespeicherten Datensatz rekonstruieren
+  // 3. Modell-Datei einlesen: je Klasse eine Tabelle mit einer Zeile pro Probe
   const saved = await fetch('modell.json').then(r => r.json());
-  saved.dataset.forEach(({ classId, data, shape }) => {
-    knn.addExample(tf.tensor(data, shape), classId);
-  });
+  const tabellen = {};
+  for (const { classId, data, shape } of saved.dataset) {
+    tabellen[classId] = tf.tensor2d(data, shape);
+  }
+  knn.setClassifierDataset(tabellen);
 
-  // 4. Live erkennen
+  // 4. Kamera starten
   const video = document.getElementById('cam');
-  setInterval(async () => {
-    const feat   = net.infer(video, true);
+  video.srcObject = await navigator.mediaDevices.getUserMedia({ video: true });
+  await video.play();
+  const flaeche = document.createElement('canvas');
+  const stift = flaeche.getContext('2d');
+
+  // 5. Fünfmal pro Sekunde erkennen
+  setInterval(async () =&gt; {
+    // Bild spiegeln – so nimmt auch der KI-Trainer die Frontkamera auf
+    flaeche.width = video.videoWidth;
+    flaeche.height = video.videoHeight;
+    stift.setTransform(-1, 0, 0, 1, flaeche.width, 0);
+    stift.drawImage(video, 0, 0);
+
+    const feat = tf.tidy(() =&gt; net.infer(flaeche, true));
     const result = await knn.predictClass(feat, 3);
+    feat.dispose();   // Speicher wieder freigeben
+
+    const klasse = saved.classes.find(c =&gt; String(c.id) === result.label);
     document.getElementById('label').textContent =
-      saved.classes[result.label].name + ' (' +
-      Math.round(result.confidences[result.label] * 100) + '%)';
+      klasse.name + ' (' + Math.round(result.confidences[result.label] * 100) + ' %)';
   }, 200);
 }
-init();
+start();
 &lt;/script&gt;</div>
       </div>
 
       <div class="ki-intro-card">
         <h3>🐍 Modell in Python verwenden</h3>
         <p>
-          In Python kannst du die gespeicherte JSON-Datei nicht direkt laden –
-          das KNN-Format ist TF.js-spezifisch. Es gibt zwei Wege:
+          Die Modell-Datei ist eine gewöhnliche JSON-Datei mit Zahlen. In Python gibt es zwei Wege:
         </p>
         <div class="knn-step" style="margin-top:10px">
           <div class="knn-num">A</div>
           <div class="knn-step-txt">
             <strong>Feature-Vektoren direkt nutzen:</strong>
-            Die JSON-Datei enthält Float32-Arrays. Du kannst sie in Python einlesen
-            und mit <code>scikit-learn</code>'s KNeighborsClassifier nachbauen.
+            Die Zahlen aus der JSON-Datei einlesen und den Klassifikator mit dem
+            <code>KNeighborsClassifier</code> aus <code>scikit-learn</code> nachbauen. Das geht mit Dateien aus
+            allen Modulen. Für <em>neue</em> Bilder fehlt in Python allerdings der passende Fingerabdruck –
+            den berechnet nur MobileNet im Browser.
           </div>
         </div>
-        <div class="code-block"><button type="button" class="btn-copy-code">Kopieren</button>import json, numpy as np
+        <div class="code-block"><button type="button" class="btn-copy-code">Kopieren</button>import json
+import numpy as np
 from sklearn.neighbors import KNeighborsClassifier
 
-# JSON laden
 with open('modell.json') as f:
     saved = json.load(f)
 
-# Daten aufbereiten
+# Je Klasse steht eine Tabelle in der Datei: eine Zeile pro Probe
 X, y = [], []
 for entry in saved['dataset']:
-    X.append(entry['data'])
-    y.append(entry['classId'])
-
+    zeilen = np.array(entry['data'], dtype=np.float32).reshape(entry['shape'])
+    X.extend(zeilen)
+    y.extend([entry['classId']] * len(zeilen))
 X = np.array(X)
 
-# KNN-Klassifikator trainieren
-knn = KNeighborsClassifier(n_neighbors=3)
-knn.fit(X, y)
+# Wie im KI-Trainer: jede Zeile auf die Länge 1 bringen
+X = X / np.linalg.norm(X, axis=1, keepdims=True)
 
-# Klassen-Lookup
-classes = {str(c['id']): c['name'] for c in saved['classes']}
+knn = KNeighborsClassifier(n_neighbors=3).fit(X, y)
+namen = {c['id']: c['name'] for c in saved['classes']}
 
-# Beispielvorhersage (feat_vector = 1024-dimensionaler Vektor von MobileNet)
-# prediction = knn.predict([feat_vector])[0]
-# print(classes[str(prediction)])</div>
+# Probe: Die erste gespeicherte Zeile wird ihrer eigenen Klasse zugeordnet
+print(namen[knn.predict(X[:1])[0]])</div>
         <div class="knn-step" style="margin-top:12px">
           <div class="knn-num">B</div>
           <div class="knn-step-txt">
             <strong>Neu trainieren mit Python + TensorFlow:</strong>
             Bilder erneut aufnehmen, MobileNet in Python als Feature-Extraktor
             nutzen (<code>tensorflow-hub</code>) und KNN oder einen anderen
-            Klassifikator trainieren. Empfehlenswert für größere Projekte.
+            Klassifikator trainieren. Empfehlenswert für größere Projekte. Die Fingerabdrücke aus Python
+            stimmen nicht genau mit denen aus dem Browser überein – deshalb nicht mit den Zahlen aus der
+            JSON-Datei mischen.
           </div>
         </div>
         <div class="code-block"><button type="button" class="btn-copy-code">Kopieren</button>import tensorflow as tf
@@ -327,8 +352,8 @@ from PIL import Image
 model = hub.load("https://tfhub.dev/google/imagenet/mobilenet_v2_050_224/feature_vector/5")
 
 def extract_features(image_path):
-    img = Image.open(image_path).resize((224, 224))
-    arr = np.array(img) / 255.0
+    img = Image.open(image_path).convert('RGB').resize((224, 224))
+    arr = np.array(img, dtype=np.float32) / 255.0
     return model(arr[np.newaxis, ...]).numpy()[0]
 
 # Beispiel: Features für eigene Bilder extrahieren
@@ -337,16 +362,14 @@ def extract_features(image_path):
       </div>
 
       <div class="ki-intro-card">
-        <h3>📱 Modell auf dem iPad / Handy nutzen</h3>
+        <h3>📱 Auf iPad und Handy</h3>
         <p>
-          Da der KI-Trainer eine normale Webseite ist, läuft er auf jedem Gerät
-          mit modernem Browser – iPad, iPhone, Android. Einfach die URL öffnen,
-          fertig. Für Offline-Nutzung kannst du die HTML-Datei zusammen mit der
-          JSON-Modelldatei und den Modell-Ordnern lokal speichern.
+          Der KI-Trainer ist eine normale Webseite und braucht nur einen aktuellen Browser –
+          auf dem iPad, dem Handy oder dem Rechner. Die Adresse öffnen genügt, es wird nichts installiert.
         </p>
-        <div class="help-tip">💡 Für ein richtiges App-Erlebnis kannst du die Seite als
-        PWA (Progressive Web App) verpacken – dann erscheint ein App-Icon auf dem Homescreen
-        und sie funktioniert offline.</div>
+        <div class="help-tip">💡 Zwei Dinge braucht es: Die Seite muss über <strong>https</strong> laufen, sonst gibt
+        der Browser Kamera und Mikrofon nicht frei. Und zum Laden der Seite und der Modelle ist eine Verbindung
+        zum Server nötig – gerechnet wird danach nur auf dem Gerät.</div>
       </div>
 
       </div><!-- /adv-pane-export -->
@@ -360,12 +383,12 @@ def extract_features(image_path):
         <h3>🧮 k-Nearest Neighbors – die Idee</h3>
         <p>
           KNN ist einer der intuitivsten Algorithmen im maschinellen Lernen:
-          <strong>„Sag mir, wer deine Nachbarn sind – und ich sage dir, wer du bist."</strong>
+          <strong>„Sag mir, wer deine Nachbarn sind – und ich sage dir, wer du bist.“</strong>
         </p>
         <p>
           Wenn du eine neue Eingabe klassifizieren willst, sucht KNN die <em>k</em> ähnlichsten
           bekannten Beispiele aus dem Training und schaut, welche Klasse dort am häufigsten vorkommt.
-          Im KI-Trainer ist k = 3.
+          Im KI-Trainer ist k = 3 voreingestellt; mit dem Regler kannst du k zwischen 1 und 9 verändern.
         </p>
       </div>
 
@@ -375,16 +398,16 @@ def extract_features(image_path):
           <div class="knn-num">1</div>
           <div class="knn-step-txt">
             <strong>Feature-Extraktion:</strong> MobileNet (oder MoveNet) wandelt die Eingabe
-            in einen Zahlen-Vektor um – z. B. 1.024 Zahlen für ein Bild. Dieser Vektor ist
-            der „Fingerabdruck" der Eingabe im mehrdimensionalen Raum.
+            in einen Zahlen-Vektor um – z. B. 1.280 Zahlen für ein Bild. Dieser Vektor ist
+            der „Fingerabdruck“ der Eingabe im mehrdimensionalen Raum.
           </div>
         </div>
         <div class="knn-step">
           <div class="knn-num">2</div>
           <div class="knn-step-txt">
-            <strong>Training = Speichern:</strong> Beim Gedrückthalten speichert der KI-Trainer
-            den Fingerabdruck zusammen mit der gewählten Klasse. Kein Gradient Descent,
-            kein Backpropagation – nur Abspeichern.
+            <strong>Training = Speichern:</strong> Beim Klick auf „Trainieren“ berechnet der KI-Trainer
+            zu jeder Probe den Fingerabdruck und speichert ihn zusammen mit der Klasse. Kein Gradient Descent,
+            keine Backpropagation – nur Abspeichern.
           </div>
         </div>
         <div class="knn-step">
@@ -393,13 +416,14 @@ def extract_features(image_path):
             <strong>Abstand berechnen:</strong> Bei der Erkennung wird der neue Fingerabdruck
             mit allen gespeicherten verglichen. Der Abstand zwischen zwei Vektoren ist die
             <strong>euklidische Distanz</strong> – wie der Abstand zweier Punkte im Raum,
-            nur in 1.024 Dimensionen.
+            nur in 1.280 Dimensionen. Vorher werden alle Vektoren auf dieselbe Länge gebracht,
+            damit nur ihre Richtung zählt.
           </div>
         </div>
         <div class="knn-step">
           <div class="knn-num">4</div>
           <div class="knn-step-txt">
-            <strong>Mehrheitsentscheidung:</strong> Die 3 nächsten Nachbarn (k = 3) werden
+            <strong>Mehrheitsentscheidung:</strong> Die k nächsten Nachbarn (voreingestellt k = 3) werden
             gefunden. Welche Klasse kommt am häufigsten vor? Das ist das Ergebnis.
             Die Konfidenz ist der Anteil der Nachbarn dieser Klasse (z. B. 2/3 = 67 %).
           </div>
@@ -409,8 +433,8 @@ def extract_features(image_path):
       <div class="method-card">
         <h3>✅ Warum KNN hier ideal ist</h3>
         <p>
-          <strong>Kein Training im klassischen Sinn:</strong> Neue Beispiele können jederzeit
-          hinzugefügt werden, ohne alles neu zu berechnen. Das macht KNN interaktiv und sofort.
+          <strong>Kein Training im klassischen Sinn:</strong> Neue Beispiele kommen einfach dazu –
+          es muss kein Netz neu berechnet werden. Deshalb dauert auch „Erneut trainieren“ nur Sekunden.
         </p>
         <p>
           <strong>Nachvollziehbar:</strong> Man kann sich bildlich vorstellen, warum eine Klasse
@@ -419,7 +443,7 @@ def extract_features(image_path):
         <p>
           <strong>Kombinierbar:</strong> KNN alleine wäre bei rohen Pixeln nutzlos (zu viele
           Dimensionen, zu viel Rauschen). Erst die Features von MobileNet machen den Raum
-          „sinnvoll" – ähnliche Bilder liegen dann wirklich nah beieinander.
+          „sinnvoll“ – ähnliche Bilder liegen dann wirklich nah beieinander.
         </p>
       </div>
 
@@ -435,9 +459,9 @@ def extract_features(image_path):
           (z. B. rohe Pixel ohne MobileNet), funktioniert KNN schlecht.
         </p>
         <p>
-          <strong>Kein „Lernen" aus Mustern:</strong> KNN erkennt keine abstrakten Regeln –
-          es vergleicht nur. Ein tiefes neuronales Netz könnte das Konzept „Hund" verstehen,
-          KNN kennt nur die konkreten Beispiele, die du ihm gezeigt hast.
+          <strong>Kein „Lernen“ aus Mustern:</strong> KNN erkennt keine abstrakten Regeln –
+          es vergleicht nur. Ein tiefes neuronales Netz kann aus sehr vielen Bildern allgemeinere Muster
+          für „Hund“ lernen, KNN kennt nur die konkreten Beispiele, die du ihm gezeigt hast.
         </p>
       </div>
 
@@ -471,7 +495,7 @@ def extract_features(image_path):
           <div class="lib-icon" style="background:rgba(255,165,0,.12)">🔶</div>
           <div>
             <h3>TensorFlow.js <span class="lib-tag">Fundament</span></h3>
-            <p>Google · <span class="license-badge">Apache 2.0</span> · Version 4.15</p>
+            <p>Google · <span class="license-badge">Apache 2.0</span></p>
           </div>
         </div>
         <div class="lib-card-bd">
@@ -607,11 +631,11 @@ def extract_features(image_path):
       <div class="help-steps">
         <div class="help-step">
           <div class="help-step-num">1</div>
-          <div class="help-step-txt"><strong>Kamera starten:</strong> Klicke auf „📷 Kamera starten" und erlaube den Kamerazugriff im Browser.</div>
+          <div class="help-step-txt"><strong>Kamera starten:</strong> Klicke auf „📷 Kamera starten“ und erlaube den Kamerazugriff im Browser.</div>
         </div>
         <div class="help-step">
           <div class="help-step-num">2</div>
-          <div class="help-step-txt"><strong>Klassen anlegen:</strong> Klicke auf „+ Klasse hinzufügen" und gib ihr einen Namen, z. B. „Daumen hoch". Lege mindestens 2 Klassen an.</div>
+          <div class="help-step-txt"><strong>Klassen anlegen:</strong> Klicke auf „+ Klasse hinzufügen“ und gib ihr einen Namen, z. B. „Daumen hoch“. Lege mindestens 2 Klassen an.</div>
         </div>
         <div class="help-step">
           <div class="help-step-num">3</div>
@@ -623,11 +647,11 @@ def extract_features(image_path):
         </div>
         <div class="help-step">
           <div class="help-step-num">5</div>
-          <div class="help-step-txt"><strong>Trainieren:</strong> Klicke auf „⚡ Jetzt trainieren". Das dauert nur wenige Sekunden.</div>
+          <div class="help-step-txt"><strong>Trainieren:</strong> Klicke auf „⚡ Jetzt trainieren“. Das dauert nur wenige Sekunden.</div>
         </div>
         <div class="help-step">
           <div class="help-step-num">6</div>
-          <div class="help-step-txt"><strong>Live-Erkennung:</strong> Klicke auf „▶ Live-Erkennung starten" und halte verschiedene Objekte in die Kamera – die KI erkennt sie in Echtzeit!</div>
+          <div class="help-step-txt"><strong>Live-Erkennung:</strong> Klicke auf „▶ Live-Erkennung starten“ und halte verschiedene Objekte in die Kamera – die KI erkennt sie in Echtzeit!</div>
         </div>
       </div>
       <div class="help-tip">💡 <strong>Tipp:</strong> Wenn die Erkennung schlecht ist, nimm mehr Bilder auf – besonders aus verschiedenen Winkeln, bei verschiedener Beleuchtung und mit verschiedenem Hintergrund.</div>
@@ -696,7 +720,7 @@ def extract_features(image_path):
                 <ul style="margin-top:8px">
                   <li><span class="t-blue">classes</span> – Klassenbezeichnungen</li>
                   <li><span class="t-blue">dataset</span> – Feature-Matrix (Float32-Arrays)</li>
-                  <li><span class="t-yellow">Hinweis:</span> MobileNet (~9 MB) wird beim Laden neu geladen.</li>
+                  <li><span class="t-yellow">Hinweis:</span> MobileNet (~8 MB) wird beim Laden neu geladen.</li>
                 </ul>
               </div>
               <div class="usage-pane" data-pane="how">
@@ -707,18 +731,22 @@ def extract_features(image_path):
                   <li>KNN-Datensatz aus gespeicherten Tensoren wiederherstellen</li>
                   <li>Kamera starten und live klassifizieren</li>
                 </ol>
-                <div class="code-block"><button type="button" class="btn-copy-code">Kopieren</button>const net = await mobilenet.load({version:2, alpha:0.5});
+                <div class="code-block"><button type="button" class="btn-copy-code">Kopieren</button>const net = await mobilenet.load({ version: 2, alpha: 0.5,
+  modelUrl: 'models/mobilenet/model.json' });
 const knn = knnClassifier.create();
 
-const saved = await fetch('modell.json').then(r => r.json());
-saved.dataset.forEach(({classId, data, shape}) => {
-  knn.addExample(tf.tensor(data, shape), classId);
-});
+const saved = await fetch('modell.json').then(r =&gt; r.json());
+const tabellen = {};
+for (const { classId, data, shape } of saved.dataset) {
+  tabellen[classId] = tf.tensor2d(data, shape);
+}
+knn.setClassifierDataset(tabellen);
 
 // Live-Vorhersage:
 const feat   = net.infer(videoEl, true);
 const result = await knn.predictClass(feat, 3);
-console.log(saved.classes[result.label].name);</div>
+feat.dispose();
+console.log(saved.classes.find(c =&gt; String(c.id) === result.label).name);</div>
               </div>
               <div class="usage-pane" data-pane="ideas">
                 <h4>Unterrichtsprojekte</h4>
@@ -755,11 +783,11 @@ console.log(saved.classes[result.label].name);</div>
       <div class="help-steps">
         <div class="help-step">
           <div class="help-step-num">1</div>
-          <div class="help-step-txt"><strong>Mikrofon starten:</strong> Klicke auf „🎙️ Mikrofon starten" und erlaube den Mikrofonzugriff im Browser.</div>
+          <div class="help-step-txt"><strong>Mikrofon starten:</strong> Klicke auf „🎙️ Mikrofon starten“ und erlaube den Mikrofonzugriff im Browser.</div>
         </div>
         <div class="help-step">
           <div class="help-step-num">2</div>
-          <div class="help-step-txt"><strong>Klassen anlegen:</strong> Klicke auf „+ Klasse hinzufügen" und gib ihr einen Namen, z. B. „Klatschen" oder „Pfeifen".</div>
+          <div class="help-step-txt"><strong>Klassen anlegen:</strong> Klicke auf „+ Klasse hinzufügen“ und gib ihr einen Namen, z. B. „Klatschen“ oder „Pfeifen“.</div>
         </div>
         <div class="help-step">
           <div class="help-step-num">3</div>
@@ -767,15 +795,15 @@ console.log(saved.classes[result.label].name);</div>
         </div>
         <div class="help-step">
           <div class="help-step-num">4</div>
-          <div class="help-step-txt"><strong>Alle Klassen befüllen:</strong> Wiederhole Schritt 3 für jede Klasse. Nimm auch „Stille" als eigene Klasse auf, wenn du Pausen erkennen möchtest.</div>
+          <div class="help-step-txt"><strong>Alle Klassen befüllen:</strong> Wiederhole Schritt 3 für jede Klasse. Nimm auch „Stille“ als eigene Klasse auf, wenn du Pausen erkennen möchtest.</div>
         </div>
         <div class="help-step">
           <div class="help-step-num">5</div>
-          <div class="help-step-txt"><strong>Trainieren:</strong> Klicke auf „⚡ Jetzt trainieren".</div>
+          <div class="help-step-txt"><strong>Trainieren:</strong> Klicke auf „⚡ Jetzt trainieren“.</div>
         </div>
         <div class="help-step">
           <div class="help-step-num">6</div>
-          <div class="help-step-txt"><strong>Live-Test:</strong> Klicke auf „▶ Live-Erkennung starten" und erzeuge Töne – die KI reagiert in Echtzeit.</div>
+          <div class="help-step-txt"><strong>Live-Test:</strong> Klicke auf „▶ Live-Erkennung starten“ und erzeuge Töne – die KI reagiert in Echtzeit.</div>
         </div>
       </div>
       <div class="help-tip">💡 <strong>Tipp:</strong> Je kürzer und eindeutiger die Töne, desto besser die Erkennung. Vermeide Hintergrundgeräusche beim Aufnehmen.</div>
@@ -895,11 +923,11 @@ const result = await knn.predictClass(feat, 3);</div>
       <div class="help-steps">
         <div class="help-step">
           <div class="help-step-num">1</div>
-          <div class="help-step-txt"><strong>Kamera starten:</strong> Klicke auf „📷 Kamera starten". Du siehst dich selbst – und bunte Punkte auf deinen Gelenken (das Skelett).</div>
+          <div class="help-step-txt"><strong>Kamera starten:</strong> Klicke auf „📷 Kamera starten“. Du siehst dich selbst – und bunte Punkte auf deinen Gelenken (das Skelett).</div>
         </div>
         <div class="help-step">
           <div class="help-step-num">2</div>
-          <div class="help-step-txt"><strong>Klassen anlegen:</strong> Klicke auf „+ Klasse hinzufügen" und gib ihr einen Namen, z. B. „Arme hoch" oder „Hocke".</div>
+          <div class="help-step-txt"><strong>Klassen anlegen:</strong> Klicke auf „+ Klasse hinzufügen“ und gib ihr einen Namen, z. B. „Arme hoch“ oder „Hocke“.</div>
         </div>
         <div class="help-step">
           <div class="help-step-num">3</div>
@@ -911,11 +939,11 @@ const result = await knn.predictClass(feat, 3);</div>
         </div>
         <div class="help-step">
           <div class="help-step-num">5</div>
-          <div class="help-step-txt"><strong>Trainieren:</strong> Klicke auf „⚡ Jetzt trainieren".</div>
+          <div class="help-step-txt"><strong>Trainieren:</strong> Klicke auf „⚡ Jetzt trainieren“.</div>
         </div>
         <div class="help-step">
           <div class="help-step-num">6</div>
-          <div class="help-step-txt"><strong>Live-Test:</strong> Klicke auf „▶ Live-Erkennung" und bewege dich – die KI zeigt in Echtzeit, welche Pose sie erkennt.</div>
+          <div class="help-step-txt"><strong>Live-Test:</strong> Klicke auf „▶ Live-Erkennung“ und bewege dich – die KI zeigt in Echtzeit, welche Pose sie erkennt.</div>
         </div>
       </div>
       <div class="help-tip">💡 <strong>Datenschutz:</strong> Die KI speichert nur 17 Gelenk-Koordinaten, keine Kamerabilder. Dein Aussehen bleibt privat!</div>
@@ -1035,7 +1063,7 @@ const result = await knn.predictClass(tf.tensor2d([vec]), 3);</div>
       <div class="help-steps">
         <div class="help-step">
           <div class="help-step-num">1</div>
-          <div class="help-step-txt"><strong>Klassen anlegen:</strong> Klicke auf „+ Klasse hinzufügen" und gib ihr einen Namen, z. B. „Kreis" oder „Haus".</div>
+          <div class="help-step-txt"><strong>Klassen anlegen:</strong> Klicke auf „+ Klasse hinzufügen“ und gib ihr einen Namen, z. B. „Kreis“ oder „Haus“.</div>
         </div>
         <div class="help-step">
           <div class="help-step-num">2</div>
@@ -1043,7 +1071,7 @@ const result = await knn.predictClass(tf.tensor2d([vec]), 3);</div>
         </div>
         <div class="help-step">
           <div class="help-step-num">3</div>
-          <div class="help-step-txt"><strong>Aufnehmen:</strong> Klicke den Aufnahme-Button bei der passenden Klasse. Dann auf „🗑 Löschen" und das nächste Beispiel zeichnen. Wiederhole das mind. 15× pro Klasse.</div>
+          <div class="help-step-txt"><strong>Aufnehmen:</strong> Klicke den Aufnahme-Button bei der passenden Klasse. Dann auf „🗑 Löschen“ und das nächste Beispiel zeichnen. Wiederhole das mind. 15× pro Klasse.</div>
         </div>
         <div class="help-step">
           <div class="help-step-num">4</div>
@@ -1051,11 +1079,11 @@ const result = await knn.predictClass(tf.tensor2d([vec]), 3);</div>
         </div>
         <div class="help-step">
           <div class="help-step-num">5</div>
-          <div class="help-step-txt"><strong>Trainieren:</strong> Klicke auf „⚡ Jetzt trainieren".</div>
+          <div class="help-step-txt"><strong>Trainieren:</strong> Klicke auf „⚡ Jetzt trainieren“.</div>
         </div>
         <div class="help-step">
           <div class="help-step-num">6</div>
-          <div class="help-step-txt"><strong>Live-Test:</strong> Zeichne etwas in den Bereich und klicke auf „🔍 Erkennen" – die KI sagt dir, was sie sieht.</div>
+          <div class="help-step-txt"><strong>Live-Test:</strong> Zeichne etwas in den Bereich und klicke auf „🔍 Erkennen“ – die KI sagt dir, was sie sieht.</div>
         </div>
       </div>
       <div class="help-tip">💡 <strong>Tipp:</strong> Starte mit einfachen, klar unterschiedlichen Formen (z. B. Dreieck, Kreis, Quadrat). Zu ähnliche Formen verwirren die KI.</div>
@@ -1254,13 +1282,13 @@ async function classify(canvas, net, knn) {
       </div>
       <div class="face-science-note">
         <strong>🧪 Das Ekman-Problem</strong><br>
-        Diese Werte basieren auf Paul Ekmans Theorie „universeller Basisemotionen" (1970er).
+        Diese Werte basieren auf Paul Ekmans Theorie „universeller Basisemotionen“ (1970er).
         Neuere Forschung (Lisa Feldman Barrett u.a.) zeigt: Gesichtsausdrücke sind kulturell geprägt
         und kontextabhängig. Ein Lächeln kann Freude, Nervosität oder Höflichkeit bedeuten.
         <strong>Teste selbst:</strong> Kann die Analyse unterscheiden, ob dein Lächeln echt oder erzwungen ist?
       </div>
       <div class="face-experiment-box">
-        <strong>💡 Klassenexperiment:</strong> Erzeugt dieselbe „Emotion" bei verschiedenen Personen
+        <strong>💡 Klassenexperiment:</strong> Erzeugt dieselbe „Emotion“ bei verschiedenen Personen
         dieselben Werte? Was bedeutet das für den Einsatz von Emotions-KI in Schule, Bewerbungsgesprächen oder der Justiz?
       </div>
     </div>
@@ -1321,11 +1349,11 @@ async function classify(canvas, net, knn) {
     <div class="help-panel" id="help-panel-data">
       <h4>📊 So nutzt du das Zahlendaten-Modul</h4>
       <div class="help-steps">
-        <div class="help-step"><div class="help-step-num">1</div><div class="help-step-txt"><strong>Schnellstart:</strong> Klicke auf „🐧 Pinguine laden" – 150 Beispiele werden direkt als Trainingsdaten übernommen.</div></div>
+        <div class="help-step"><div class="help-step-num">1</div><div class="help-step-txt"><strong>Schnellstart:</strong> Klicke auf „🐧 Pinguine laden“ – 150 Beispiele werden direkt als Trainingsdaten übernommen.</div></div>
         <div class="help-step"><div class="help-step-num">2</div><div class="help-step-txt"><strong>Merkmale:</strong> Die Eigenschaften (z.B. Schnabellänge) werden automatisch aus dem Datensatz gelesen. Für eigene Daten kannst du sie manuell definieren.</div></div>
         <div class="help-step"><div class="help-step-num">3</div><div class="help-step-txt"><strong>CSV-Upload:</strong> Eigene Tabelle hochladen – beliebige Spalten, eine davon als Klassen-Label wählen.</div></div>
         <div class="help-step"><div class="help-step-num">4</div><div class="help-step-txt"><strong>Manuell:</strong> Messwerte direkt eintippen – gut für selbst erhobene Daten (Blätter messen, Schrittzählen etc.).</div></div>
-        <div class="help-step"><div class="help-step-num">5</div><div class="help-step-txt"><strong>Trainieren</strong> und dann unter „Vorhersage" neue Messwerte eingeben und klassifizieren lassen.</div></div>
+        <div class="help-step"><div class="help-step-num">5</div><div class="help-step-txt"><strong>Trainieren</strong> und dann unter „Vorhersage“ neue Messwerte eingeben und klassifizieren lassen.</div></div>
         <div class="help-step"><div class="help-step-num">6</div><div class="help-step-txt"><strong>Vergleiche:</strong> Wie ändert sich die Genauigkeit wenn du einzelne Merkmale weglässt?</div></div>
       </div>
       <div class="help-tip">💡 Der Unterschied zu den anderen Modulen: Hier gibt es kein Kamerabild – die KI lernt aus reinen Zahlen.</div>
@@ -1415,16 +1443,16 @@ async function classify(canvas, net, knn) {
         integrity="sha384-1p3fY0k54nd9NrUVt6Rvs3KpSxbtCo+IPIVV25jLrbd1J1YpXDZtyW32BkVBMHeC"
         crossorigin="anonymous"></script>
 
-<script src="js/grundlagen.js?v=1.5.1"></script>
-<script src="js/lernmodul.js?v=1.5.1"></script>
-<script src="js/modul-bild.js?v=1.5.1"></script>
-<script src="js/modul-ton.js?v=1.5.1"></script>
-<script src="js/modul-pose.js?v=1.5.1"></script>
-<script src="js/modul-zeichnen.js?v=1.5.1"></script>
-<script src="js/pinguine.js?v=1.5.1"></script>
-<script src="js/modul-mimik.js?v=1.5.1"></script>
-<script src="js/modul-daten.js?v=1.5.1"></script>
-<script src="js/start.js?v=1.5.1"></script>
+<script src="js/grundlagen.js?v=1.5.2"></script>
+<script src="js/lernmodul.js?v=1.5.2"></script>
+<script src="js/modul-bild.js?v=1.5.2"></script>
+<script src="js/modul-ton.js?v=1.5.2"></script>
+<script src="js/modul-pose.js?v=1.5.2"></script>
+<script src="js/modul-zeichnen.js?v=1.5.2"></script>
+<script src="js/pinguine.js?v=1.5.2"></script>
+<script src="js/modul-mimik.js?v=1.5.2"></script>
+<script src="js/modul-daten.js?v=1.5.2"></script>
+<script src="js/start.js?v=1.5.2"></script>
 
 <footer class="site-footer">
   <div>
