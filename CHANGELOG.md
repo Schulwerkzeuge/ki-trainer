@@ -1,5 +1,9 @@
 # Änderungen
 
+## Werkzeuge – November 2026 (Anwendung unverändert 1.5.0)
+
+- **Bibliotheken aktualisieren:** `werkzeuge/bibliotheken.py` prüft, dass `package.json`, `libs/`, die Prüfsummen in `index.html` und `NOTICE` zusammenpassen, zeigt neuere Versionen an und tauscht Bibliotheken auf Wunsch aus. `package.json` nennt die Versionen, damit GitHub vor bekannten Sicherheitslücken warnen kann. `tests/alle.sh` startet alle Prüfungen.
+
 ## 1.5.0 – November 2026
 
 Erste öffentliche Fassung.

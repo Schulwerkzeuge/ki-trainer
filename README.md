@@ -20,7 +20,7 @@ In jedem Modul: Proben aufnehmen, trainieren, live erkennen, das Modell mit eine
 ## Einrichten
 
 1. Dieses Repository herunterladen (grüner Knopf „Code“ → „Download ZIP“) und entpacken.
-2. Den ganzen Inhalt in einen Ordner des Webspace laden, zum Beispiel `ki-trainer/`. Gebraucht werden `index.html`, `favicon.svg` und die Ordner `css/`, `js/`, `libs/`, `models/` (zusammen etwa 17 MB). `tests/` wird nicht gebraucht.
+2. Den ganzen Inhalt in einen Ordner des Webspace laden, zum Beispiel `ki-trainer/`. Gebraucht werden `index.html`, `favicon.svg` und die Ordner `css/`, `js/`, `libs/`, `models/` (zusammen etwa 17 MB). `tests/`, `werkzeuge/` und `package.json` werden nicht gebraucht.
 3. Die Seite muss über **https** erreichbar sein – sonst geben Browser Kamera und Mikrofon nicht frei.
 4. Impressum und Datenschutz eintragen: In `index.html` steht in der Fußzeile `<!-- rechtliches --><!-- /rechtliches -->`. Dazwischen gehören die Links Ihrer Schule, zum Beispiel:
 
@@ -64,6 +64,8 @@ js/start.js         legt die Module an, verdrahtet Knöpfe und Navigation
 libs/               fremde Bibliotheken, unverändert (siehe NOTICE)
 models/             vortrainierte Modelle, unverändert (siehe NOTICE)
 tests/              automatische Tests
+werkzeuge/          bibliotheken.py: fremde Bibliotheken prüfen und aktualisieren
+package.json        Verzeichnis der fremden Bibliotheken mit ihren Versionen (es wird nichts installiert)
 ```
 
 Bezeichner und Kommentare sind deutsch. Englisch geblieben sind die Namen in HTML und CSS sowie die Felder der Datenformate (Modell-Datei und Browserspeicher: `classes`, `id`, `name`, `samples`, `dataset` …), damit früher heruntergeladene Modelle weiter passen.
@@ -83,10 +85,30 @@ Die Datei enthält nur Zahlen (Merkmalsvektoren), keine Bilder oder Töne. Wie m
 
 ```bash
 python3 -m venv .venv && .venv/bin/pip install playwright pillow && .venv/bin/playwright install chromium
-.venv/bin/python tests/ki_trainer.py
+tests/alle.sh
 ```
 
+`tests/alle.sh` prüft erst die Bibliotheken (`werkzeuge/bibliotheken.py pruefen`, ohne Browser und ohne Netz) und startet dann den Browsertest `tests/ki_trainer.py`.
+
 Der Test startet einen kleinen Server mit strenger CSP und geht in Chromium mit simulierter Kamera und simuliertem Mikrofon durch alle sechs Module: aufnehmen, trainieren, erkennen, Modell herunterladen und wieder laden, zurücksetzen. Geprüft wird auch, dass keine Anfrage an fremde Server geht, dass die Kamera nach dem Verlassen aus ist und dass keine Bilder im Browser bleiben. Weil das Testbild der simulierten Kamera keinen Menschen zeigt, liefern in den Modulen Pose und Mimik Ersatzfunktionen feste Körper- und Gesichtspunkte; alles danach läuft mit dem echten Code. Nicht abgedeckt: Safari/iPadOS und die Erkennungsgüte mit echten Personen.
+
+## Bibliotheken aktualisieren
+
+Die Dateien in `libs/` sind unveränderte Kopien aus den npm-Paketen. Welche Version gilt, steht in `package.json`; `index.html` lädt jede Datei mit Prüfsumme (`integrity`), `NOTICE` nennt Version und Lizenz. Das Werkzeug hält diese vier Stellen zusammen:
+
+```bash
+python3 werkzeuge/bibliotheken.py pruefen                 # passt alles zusammen? (ohne Netz)
+python3 werkzeuge/bibliotheken.py stand                   # eingebaute Versionen neben den neuesten bei npm
+python3 werkzeuge/bibliotheken.py holen papaparse@5.7.1   # Version eintragen, Datei holen, index.html und NOTICE anpassen
+python3 werkzeuge/bibliotheken.py holen                   # libs/ auf den Stand von package.json bringen
+tests/alle.sh
+```
+
+`holen` lädt das Paket von registry.npmjs.org, vergleicht es mit der dort hinterlegten Prüfsumme und nimmt genau eine Datei heraus. Es wird nichts installiert und kein Code aus dem Paket ausgeführt; gebraucht wird nur Python 3. Steht ein Paket plötzlich unter einer anderen Lizenz, bricht das Werkzeug ab.
+
+Aktualisiert wird bewusst von Hand und nicht automatisch: Die Modelle in `models/` gehören zu bestimmten Bibliotheksversionen, und die Tests prüfen den Ablauf, nicht die Erkennungsgüte. Nach einem Austausch deshalb Bild, Pose und Mimik einmal mit echter Kamera ausprobieren – erst dann veröffentlichen. Die Modelle selbst fasst das Werkzeug nicht an.
+
+Weil `package.json` die Versionen nennt, kann GitHub vor bekannten Sicherheitslücken warnen (in den Einstellungen des Repositorys „Dependabot alerts“ einschalten).
 
 ## Mitmachen
 
