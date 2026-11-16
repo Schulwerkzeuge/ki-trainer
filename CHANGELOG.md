@@ -1,5 +1,9 @@
 # Änderungen
 
+## 1.5.4 – November 2026
+
+- **Behoben:** Die Versionsnummer in der Fußzeile blieb leer.
+
 ## 1.5.3 – November 2026
 
 - „Wie diese Seite entstanden ist“ nennt kein Produkt mehr, sondern „ein KI-Sprachmodell“.

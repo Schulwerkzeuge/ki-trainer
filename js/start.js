@@ -216,11 +216,12 @@ document.querySelectorAll('.btn-copy-code').forEach(knopf => {
   });
 });
 
-// Versionsnummer in der Fußzeile (steht einmal im <meta name="version">)
-{
+// Versionsnummer in der Fußzeile (steht einmal im <meta name="version">).
+// Die Fußzeile steht in index.html hinter den Skripten – deshalb erst eintragen, wenn die ganze Seite gelesen ist.
+document.addEventListener('DOMContentLoaded', () => {
   const v = document.querySelector('meta[name="version"]'), ziel = document.getElementById('app-version');
   if (v && ziel) ziel.textContent = v.content;
-}
+});
 
 // ── TensorFlow.js im Hintergrund vorbereiten ───────────────────
 tf.ready().catch(fehler => console.warn('TF.js preload failed:', fehler));

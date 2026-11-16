@@ -62,6 +62,8 @@ def gespeichert(s):
 
 
 def start_und_aufbau(sz, s):
+    stand = s.get_attribute('meta[name="version"]', "content")
+    pruefe("Start: Fußzeile zeigt die Version", s.text_content("#app-version") == stand and stand != "", s.text_content("#app-version"))
     karten = s.eval_on_selector_all("[data-open]", "e => e.map(x => x.dataset.open)")
     pruefe("Start: sechs Module und die Info-Seite", karten == ["img", "audio", "pose", "draw", "face", "data", "info"], karten)
     pruefe("Start: Titel ohne Schulnamen", "Anton" not in s.title(), s.title())

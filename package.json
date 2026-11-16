@@ -1,6 +1,6 @@
 {
   "name": "ki-trainer",
-  "version": "1.5.3",
+  "version": "1.5.4",
   "private": true,
   "description": "Verzeichnis der fremden Bibliotheken in libs/. Es wird nichts installiert: werkzeuge/bibliotheken.py holt die Dateien und prüft, dass alles zusammenpasst.",
   "license": "Apache-2.0",
